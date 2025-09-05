@@ -25,13 +25,13 @@ namespace Weather_forecast.Controllers
         {
             return View();
         }
-        [HttpPost("Home/city")]
-        public async Task<IActionResult> GetCityData([FromForm] string? city)
+        [HttpPost("Home/City")]
+        public async Task<IActionResult> SearchResults([FromForm] string? city)
         {
             if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
             var result = await _weatherAPIHandler.FetchDataAsync(city);
             if (result == null) return BadRequest($"Failed to fetch weather data for {city}");
-            return Ok(result);
+            return View(result);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,13 +1,11 @@
-﻿@model WeatherforcecastAPIResponseModel
-
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome to the weather forecast app</h1>
     <p>Search for a city to see its current weather:</p>
-    <form asp-action="city" method="post">
+    <form asp-action="City" method="post">
         <input type="text" name="city" placeholder="Search for a city"/>
         <input type="submit" value="Search" style="width:100px; height:30px;"/>
     </form>
