@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
@@ -26,6 +27,7 @@ namespace Weather_forecast.Controllers
             return View();
         }
         [HttpPost("Home/City")]
+        [Authorize]
         public async Task<IActionResult> SearchResults([FromForm] string? city)
         {
             if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");

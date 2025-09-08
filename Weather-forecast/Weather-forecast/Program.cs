@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Weather_forecast.Data;
+using Weather_forecast.Models;
 using Weather_forecast.Services;
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 namespace Weather_forecast
 {
     public class Program
@@ -16,6 +20,18 @@ namespace Weather_forecast
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequiredLength = 3;
+
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            })
+    .AddEntityFrameworkStores<DatabaseContext>()
+    .AddDefaultTokenProviders()
+    .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("CustomEmailConfirmation")
+    .AddDefaultUI();
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
             // Configure the HTTP request pipeline.
