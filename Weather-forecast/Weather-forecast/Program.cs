@@ -17,6 +17,29 @@ namespace Weather_forecast
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            app.Use(async (context, next) =>
+            {
+                if (!context.Request.Cookies.ContainsKey("id"))
+                {
+                    var cookieOptions = new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow.AddMinutes(250),
+                        Path = "/",
+                        Secure = true,
+                        HttpOnly = true,
+                        SameSite = SameSiteMode.Strict
+                    };
+
+                    var anonId = Guid.NewGuid().ToString();
+
+                    context.Response.Cookies.Append("id", anonId, cookieOptions);
+                }
+                await next.Invoke();
+            });
+
+
+
             using var scope = app.Services.CreateScope();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

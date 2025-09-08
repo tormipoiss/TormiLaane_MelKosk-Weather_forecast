@@ -6,8 +6,7 @@ namespace Weather_forecast.Models
     public class History
     {
         [Key]
-        public ulong Id{ get; set; }
-        public string City { get; set; } = "";
-        public DateTime DateAndTimeOfSearch { get; set; }
+        public Guid UserId{ get; set; }
+        public List<CitySearch> Cities { get; set; } = new();
     }
 }

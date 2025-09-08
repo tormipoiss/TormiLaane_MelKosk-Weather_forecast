@@ -1,0 +1,7 @@
+﻿@model History
+<div>
+	@foreach(CitySearch city in Model.Cities)
+	{
+		<div>@city.City at @city.Date</div>
+	}
+</div>
