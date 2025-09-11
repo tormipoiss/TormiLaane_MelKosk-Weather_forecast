@@ -1,12 +1,17 @@
-﻿@{
+﻿@model Weather_forecast.Models.History
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome to the weather forecast app</h1>
     <p>Search for a city to see its current weather:</p>
-    <form asp-action="City" method="post">
-        <input type="text" name="city" placeholder="Search for a city"/>
-        <input type="submit" value="Search" style="width:100px; height:30px;"/>
+    <form asp-action="SearchWeatherByCity" asp-controller="Weather" method="get">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <label asp-for="City"></label>
+        <input asp-for="City"/>
+        <button type="submit" style="width:100px; height:30px;">Search</button>
+        <span asp-validation-for="City" class="text-danger"></span>
     </form>
 </div>

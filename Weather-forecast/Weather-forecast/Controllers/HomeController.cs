@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
