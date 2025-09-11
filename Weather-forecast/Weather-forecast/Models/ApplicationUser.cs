@@ -4,6 +4,6 @@ namespace Weather_forecast.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public List<SearchHistoryCity> SearchHistory { get; set; }
+        public History SearchHistory { get; set; }
     }
 }

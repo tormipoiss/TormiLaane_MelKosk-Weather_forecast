@@ -10,6 +10,6 @@ namespace Weather_forecast.Data
         {
             Database.EnsureCreated();
         }
-        public DbSet<SearchHistoryCity> SearchHistory { get; set; }
+        public DbSet<History> SearchHistory { get; set; }
     }
 }
