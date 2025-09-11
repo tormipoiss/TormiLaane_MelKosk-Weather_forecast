@@ -6,6 +6,6 @@ namespace Weather_forecast.Models
     {
         [Key]
         public string UserId { get; set; }
-        public List<City>? Cities { get; set; } = new();
+        public List<City> Cities { get; set; } = new();
     }
 }

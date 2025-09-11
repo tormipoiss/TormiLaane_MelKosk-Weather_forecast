@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Weather_forecast.Models
 {
@@ -6,6 +7,8 @@ namespace Weather_forecast.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
+        [DisplayName("city name")]
         public string CityName { get; set; }
         public DateTime DateOfSearch { get; set; }
         public string HistoryUserId { get; set; }

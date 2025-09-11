@@ -1,6 +1,6 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
-@model WeatherforcecastAPIResponseModel
+@model Weather_forecast.ViewModels.CityAndApi
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -9,17 +9,32 @@
     <div class="text-center">
         <h1 class="display-4">Welcome to the weather forecast app</h1>
         <p>Search for a city to see its current weather:</p>
-        <form asp-action="City" method="post">
+@*         <form asp-action="City" method="post">
             <input type="text" name="city" placeholder="Search for a city" />
             <input type="submit" value="Search" style="width:100px; height:30px;" />
+        </form> *@
+        <form asp-action="City" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="City.CityName" />
+            <button type="submit" style="width:100px; height:30px;">Search</button>
+            <span asp-validation-for="City.CityName" class="text-danger"></span>
         </form>
         @if (Model != null)
         {
-            @if (Model.resolvedAddress != null || Model.resolvedAddress != "")
+            @if (ViewBag.error == true)
             {
                 <div style="margin-top: 0.5rem;">
-                    @Model.resolvedAddress temperatuur on @Model.currentConditions.temp C
+                    Failed to fetch weather data for @Model.City.CityName
                 </div>
+            }
+            @if (Model.Weather != null)
+            {
+                @if (Model.Weather.resolvedAddress != null || Model.Weather.resolvedAddress != "")
+                {
+                    <div style="margin-top: 0.5rem;">
+                        @Model.Weather.resolvedAddress temperatuur on @Model.Weather.currentConditions.temp C
+                    </div>
+                }
             }
         }
     </div>

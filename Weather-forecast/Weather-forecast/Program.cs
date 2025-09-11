@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
@@ -18,7 +18,10 @@ namespace Weather_forecast
             builder.Services.AddHttpClient<WeatherAPIHandler>();
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(option =>
+            {
+                option.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            });
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {

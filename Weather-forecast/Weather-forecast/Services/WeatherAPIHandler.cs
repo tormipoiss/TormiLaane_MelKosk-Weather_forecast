@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using Weather_forecast.Models;
+using Weather_forecast.ViewModels;
 
 namespace Weather_forecast.Services
 {
@@ -13,7 +14,7 @@ namespace Weather_forecast.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<WeatherforcecastAPIResponseModel?> FetchDataAsync(string city)
+        public async Task<CityAndApi?> FetchDataAsync(string city)
         {
             try
             {
@@ -21,7 +22,9 @@ namespace Weather_forecast.Services
                 res.EnsureSuccessStatusCode();
                 string content = await res.Content.ReadAsStringAsync();
                 var values = JsonSerializer.Deserialize<WeatherforcecastAPIResponseModel>(content);
-                return values;
+                CityAndApi fixedvalues = new CityAndApi();
+                fixedvalues.Weather = values;
+                return fixedvalues;
             }
             catch (HttpRequestException httpEx)
             {

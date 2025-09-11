@@ -7,6 +7,7 @@ using System.Security.Principal;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
+using Weather_forecast.ViewModels;
 
 namespace Weather_forecast.Controllers
 {
@@ -32,23 +33,34 @@ namespace Weather_forecast.Controllers
 
         [HttpPost("Home/City")]
         [Authorize]
-        public async Task<IActionResult> Index([FromForm] string? city)
+        public async Task<IActionResult> Index(CityAndApi model)
         {
-            if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
-            var result = await _weatherAPIHandler.FetchDataAsync(city);
-            if (result == null) return BadRequest($"Failed to fetch weather data for {city}");
+            ViewBag.error = false;
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            //if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
+            if (result == null)
+            {
+                ViewBag.error = true;
+                return View(model);
+            }
             var cityToHistory = new City();
-            cityToHistory.CityName = city;
+            cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             ApplicationUser usr = await _userManager.GetUserAsync(HttpContext.User);
             cityToHistory.HistoryUserId = usr?.Id;
-            if (!_context.SearchHistory.Any())
+            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == usr.Id);
+            if (testHistory == default)
             {
                 var history = new History();
                 history.UserId = usr?.Id;
                 _context.SearchHistory.Add(history);
+                _context.SaveChanges();
             }
-            History oldHistory = (History)_context.SearchHistory.Where(History => History.UserId == usr.Id);
+            History? oldHistory = _context.SearchHistory.First(History => History.UserId == usr.Id);
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
