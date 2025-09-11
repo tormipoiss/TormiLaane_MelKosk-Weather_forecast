@@ -63,7 +63,7 @@ namespace Weather_forecast.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(model.UserName);
-                if (user == null) return RedirectToAction("Index", "Home");
+                if (user == null) return View("Error");
                 var check = await _userManager.CheckPasswordAsync(user, model.Password);
                 if (!check)
                 {

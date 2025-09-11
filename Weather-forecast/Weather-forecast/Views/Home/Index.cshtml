@@ -1,5 +1,6 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
+@model WeatherforcecastAPIResponseModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -12,6 +13,15 @@
             <input type="text" name="city" placeholder="Search for a city" />
             <input type="submit" value="Search" style="width:100px; height:30px;" />
         </form>
+        @if (Model != null)
+        {
+            @if (Model.resolvedAddress != null || Model.resolvedAddress != "")
+            {
+                <div style="margin-top: 0.5rem;">
+                    @Model.resolvedAddress temperatuur on @Model.currentConditions.temp C
+                </div>
+            }
+        }
     </div>
 }
 else

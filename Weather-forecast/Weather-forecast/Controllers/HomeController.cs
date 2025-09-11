@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Weather_forecast.Models;
@@ -22,18 +22,19 @@ namespace Weather_forecast.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
         [HttpPost("Home/City")]
         [Authorize]
-        public async Task<IActionResult> SearchResults([FromForm] string? city)
+        public async Task<IActionResult> Index([FromForm] string? city)
         {
             if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
             var result = await _weatherAPIHandler.FetchDataAsync(city);
             if (result == null) return BadRequest($"Failed to fetch weather data for {city}");
             return View(result);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
