@@ -33,7 +33,7 @@ namespace Weather_forecast.Controllers
 
         [HttpPost("Home/City")]
         [Authorize]
-        public async Task<IActionResult> Index(CityAndApi model)
+        public async Task<IActionResult> CityGet(CityAndApi model)
         {
             ViewBag.error = false;
             if (!ModelState.IsValid)
@@ -45,7 +45,7 @@ namespace Weather_forecast.Controllers
             if (result == null)
             {
                 ViewBag.error = true;
-                return View(model);
+                return View("~/Views/Home/Index.cshtml", model);
             }
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
@@ -55,7 +55,7 @@ namespace Weather_forecast.Controllers
             if (uid == null)
             {
                 ViewBag.error = true;
-                return View(model);
+                return View("~/Views/Home/Index.cshtml", model);
             }
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
@@ -70,7 +70,7 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            return View(result);
+            return View("~/Views/Home/Index.cshtml", result);
         }
 
         public IActionResult Privacy()
