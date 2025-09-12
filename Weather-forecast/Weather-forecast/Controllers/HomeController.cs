@@ -50,17 +50,23 @@ namespace Weather_forecast.Controllers
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
-            ApplicationUser usr = await _userManager.GetUserAsync(HttpContext.User);
-            cityToHistory.HistoryUserId = usr?.Id;
-            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == usr.Id);
+            //ApplicationUser? usr = await _userManager.GetUserAsync(User);
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                ViewBag.error = true;
+                return View(model);
+            }
+            cityToHistory.HistoryUserId = uid;
+            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
             {
                 var history = new History();
-                history.UserId = usr?.Id;
+                history.UserId = uid;
                 _context.SearchHistory.Add(history);
                 _context.SaveChanges();
             }
-            History? oldHistory = _context.SearchHistory.First(History => History.UserId == usr.Id);
+            History? oldHistory = _context.SearchHistory.First(History => History.UserId == uid);
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
