@@ -86,7 +86,7 @@ namespace Weather_forecast.Controllers
                     History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
                     if (testHistory != default)
                     {
-                        ViewBag.showHistory = true;
+                        ViewData["showHistory"] = "true";
                     }
                     return View("~/Views/Home/Index.cshtml");
                 }
@@ -101,9 +101,8 @@ namespace Weather_forecast.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            ViewBag.showHistory = false;
+            ViewData["showHistory"] = "false";
             return RedirectToAction("Index", "Home");
-            //return View("~/Views/Home/Index.cshtml");
         }
     }
 }

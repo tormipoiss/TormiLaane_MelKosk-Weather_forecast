@@ -40,7 +40,7 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml", model);
             }
-            //if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
+            if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
             var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
             if (result == null)
             {
@@ -50,7 +50,6 @@ namespace Weather_forecast.Controllers
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
-            //ApplicationUser? usr = await _userManager.GetUserAsync(User);
             var uid = _userManager.GetUserId(User);
             if (uid == null)
             {
@@ -70,7 +69,18 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
+            ViewData["showHistory"] = "true";
             return View("~/Views/Home/Index.cshtml", result);
+        }
+
+        [HttpGet("Home/History")]
+        [Authorize]
+        public async Task<IActionResult> History()
+        {
+            var uid = _userManager.GetUserId(User);
+            CityAndApi historyCities = new CityAndApi();
+            historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            return View(historyCities);
         }
 
         public IActionResult Privacy()
