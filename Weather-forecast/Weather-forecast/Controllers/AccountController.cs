@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Principal;
+using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.ViewModels;
-using System.Security.Principal;
 
 namespace Weather_forecast.Controllers
 {
@@ -11,10 +12,12 @@ namespace Weather_forecast.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager)
+        private readonly DatabaseContext _context;
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, DatabaseContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
         public IActionResult Register()
         {
@@ -79,6 +82,12 @@ namespace Weather_forecast.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
+                    var uid = _userManager.GetUserId(User);
+                    History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+                    if (testHistory != default)
+                    {
+                        ViewBag.showHistory = true;
+                    }
                     return View("~/Views/Home/Index.cshtml");
                 }
                 ViewBag.ErrorTile = "Invalid login";
@@ -92,7 +101,9 @@ namespace Weather_forecast.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            ViewBag.showHistory = false;
             return RedirectToAction("Index", "Home");
+            //return View("~/Views/Home/Index.cshtml");
         }
     }
 }
