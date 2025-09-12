@@ -35,6 +35,7 @@
                         @Model.Weather.resolvedAddress temperatuur on @Model.Weather.currentConditions.temp C
                     </div>
                 }
+                <iframe width="600" height="500" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
             }
         }
     </div>
@@ -47,3 +48,4 @@ else
         <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
     </div>
 }
+@*<iframe width="600" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=59.4372+24.7453&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>*@
