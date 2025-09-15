@@ -11,5 +11,6 @@ namespace Weather_forecast.Data
             Database.EnsureCreated();
         }
         public DbSet<History> SearchHistory { get; set; }
+        public DbSet<CityShare> Shares { get; set; }
     }
 }

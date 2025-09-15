@@ -4,12 +4,13 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 @if (signInManager.IsSignedIn(User))
 {
     <div class="text-center">
         <h1 class="display-4">Welcome to the weather forecast app</h1>
         <p>Search for a city to see its current weather:</p>
-@*         <form asp-action="City" method="post">
+        @*         <form asp-action="City" method="post">
             <input type="text" name="city" placeholder="Search for a city" />
             <input type="submit" value="Search" style="width:100px; height:30px;" />
         </form> *@
@@ -19,6 +20,78 @@
             <button type="submit" style="width:100px; height:30px;">Search</button>
             <span asp-validation-for="City.CityName" class="text-danger"></span>
         </form>
+        @if (Model != null)
+        {
+            @if (ViewBag.error == true)
+            {
+                <div style="margin-top: 0.5rem;">
+                    Failed to fetch weather data for @Model.City.CityName
+                </div>
+            }
+            @if (Model.Weather != null)
+            {
+                @if (Model.Weather.resolvedAddress != null || Model.Weather.resolvedAddress != "")
+                {
+                    <div style="margin-top: 0.5rem;">
+                        @Model.Weather.resolvedAddress temperatuur on @Model.Weather.currentConditions.temp C
+                    </div>
+                }
+                <button onclick="showModal()">Share this forecast!</button>
+                <iframe width="600" height="500" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+
+
+            }
+        }
+        <div id="shareLink" hidden>@ViewBag.ShareLink</div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Share your link!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <a>@ViewBag.ShareLink</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="copyToClipboard()">Copy to clipboard!</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function showModal(){
+        fetch(`/Home/ShareLink?city=@ViewBag.City&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken`, {
+            method: 'POST'
+        })
+         $(document).ready(function() {
+             $("#exampleModal").modal("show");
+         });
+        }
+
+
+        @*https://masteringjs.io/tutorials/fundamentals/copy-to-clipboard*@
+        function copyToClipboard() {
+          const element = document.querySelector('#shareLink');
+          navigator.clipboard.writeText(element.innerText).then(function() {
+          console.log('Async: Copying to clipboard was successful!');
+        }, function(err) {
+          console.error('Async: Could not copy text: ', err);
+        });
+        }
+    </script>
+}
+else if (ViewBag.SharedUrl != null)
+{
+    <div class="text-center">
+        <div>
+            <h4>Want to see the forecast without relying on other people to share it to you?</h4>
+            <a class="text-dark h4" asp-area="" asp-controller="Account" asp-action="Register"> Register </a>
+             | 
+            <a class="text-dark h4" asp-controller="Account" asp-action="Login"> Login </a>
+        </div>
         @if (Model != null)
         {
             @if (ViewBag.error == true)

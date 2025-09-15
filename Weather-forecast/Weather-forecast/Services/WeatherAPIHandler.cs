@@ -8,6 +8,7 @@ namespace Weather_forecast.Services
     public class WeatherAPIHandler
     {
         private readonly HttpClient _httpClient;
+        //https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Tallinn%2C%2037%2C%20EE?unitGroup=metric&key=WMB6TMRW43KZPHAS6L8UHCN2S&contentType=json
         private static readonly string _apiKey = "WMB6TMRW43KZPHAS6L8UHCN2S"; // dont hardcode secrets
         private static readonly string _baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{0}"+$"?unitGroup=metric&key={_apiKey}&contentType=json";
         public WeatherAPIHandler(HttpClient httpClient)
