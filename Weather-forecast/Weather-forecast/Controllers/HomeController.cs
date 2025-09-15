@@ -28,6 +28,12 @@ namespace Weather_forecast.Controllers
 
         public IActionResult Index()
         {
+            var uid = _userManager.GetUserId(User);
+            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+            if (testHistory != default)
+            {
+                ViewData["showHistory"] = "true";
+            }
             return View();
         }
 
@@ -35,6 +41,17 @@ namespace Weather_forecast.Controllers
         [Authorize]
         public async Task<IActionResult> CityGet(CityAndApi model)
         {
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList.Count > 0)
+            {
+                ViewData["showHistory"] = "true";
+            }
             ViewBag.error = false;
             if (!ModelState.IsValid)
             {
@@ -50,12 +67,6 @@ namespace Weather_forecast.Controllers
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
-            var uid = _userManager.GetUserId(User);
-            if (uid == null)
-            {
-                ViewBag.error = true;
-                return View("~/Views/Home/Index.cshtml", model);
-            }
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
@@ -69,7 +80,6 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            ViewData["showHistory"] = "true";
             return View("~/Views/Home/Index.cshtml", result);
         }
 
