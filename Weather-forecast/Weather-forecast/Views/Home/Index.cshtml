@@ -31,11 +31,74 @@
             }
             @if (Model.Weather != null)
             {
-                @if (Model.Weather.resolvedAddress != null || Model.Weather.resolvedAddress != "")
+                @if (!string.IsNullOrEmpty(Model.Weather.resolvedAddress))
                 {
-                    <div style="margin-top: 0.5rem;">
-                        @Model.Weather.resolvedAddress temperature is @Model.Weather.currentConditions.temp C
-                    </div>
+                    string forecastTime = Model.Weather.currentConditions.datetime;
+                    forecastTime = forecastTime.Substring(0, 5);
+                    <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
+                        <tr style="border: 3px solid black">
+                            <th colspan="2" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@forecastTime)</th>
+                        </tr>
+                        <tr style="border: 3px solid black">
+                            <td style="text-align: center; padding: 10px;">
+                                @switch (Model.Weather.currentConditions.icon)
+                                {
+                                    case "snow":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow.svg">
+                                        break;
+                                    case "snow-showers-day":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-day.svg">
+                                        break;
+                                    case "snow-showers-night":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-night.svg">
+                                        break;
+                                    case "thunder-rain":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-rain.svg">
+                                        break;
+                                    case "thunder-showers-day":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-day.svg">
+                                        break;
+                                    case "thunder-showers-night":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-night.svg">
+                                        break;
+                                    case "rain":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/rain.svg">
+                                        break;
+                                    case "showers-day":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-day.svg">
+                                        break;
+                                    case "showers-night":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-night.svg">
+                                        break;
+                                    case "fog":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/1st%20Set%20-%20Color/fog.svg">
+                                        break;
+                                    case "wind":
+                                        <img style="width:250px;" src="https://www.svgrepo.com/show/528823/wind.svg">
+                                        break;
+                                    case "cloudy":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/cloudy.svg">
+                                        break;
+                                    case "partly-cloudy-day":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-day.svg">
+                                        break;
+                                    case "partly-cloudy-night":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-night.svg">
+                                        break;
+                                    case "clear-day":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-day.svg">
+                                        break;
+                                    case "clear-night":
+                                        <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-night.svg">
+                                        break;
+                                    default:
+                                        <span>Image for: @Model.Weather.currentConditions.icon does not exist</span>
+                                        break;
+                                }
+                            </td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px;">@Model.Weather.currentConditions.temp°C</td>
+                        </tr>
+                    </table>
                 }
             }
         }
