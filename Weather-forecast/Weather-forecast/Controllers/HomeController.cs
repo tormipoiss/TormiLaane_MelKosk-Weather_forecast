@@ -58,7 +58,12 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml", model);
             }
             if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
-            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
+            DateTime? ForecastDate = null;
+            if (model.ForecastDate != null)
+            {
+                ForecastDate = model.ForecastDate;
+            }
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName, ForecastDate);
             if (result == null)
             {
                 ViewBag.error = true;

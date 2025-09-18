@@ -18,7 +18,7 @@ namespace Weather_forecast.Services
         {
             try
             {
-                var res = await _httpClient.GetAsync(string.Format(_baseUrl,city));
+                var res = await _httpClient.GetAsync(string.Format(_baseUrl, city));
                 res.EnsureSuccessStatusCode();
                 string content = await res.Content.ReadAsStringAsync();
                 var values = JsonSerializer.Deserialize<WeatherforcecastAPIResponseModel>(content);

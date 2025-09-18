@@ -7,5 +7,6 @@ namespace Weather_forecast.ViewModels
         public WeatherforcecastAPIResponseModel Weather { get; set; }
         public City City { get; set; }
         public List<City> Cities { get; set; }
+        public DateTime? ForecastDate { get; set; }
     }
 }
