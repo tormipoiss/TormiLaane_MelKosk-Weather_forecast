@@ -63,7 +63,7 @@ namespace Weather_forecast.Controllers
             {
                 ForecastDate = model.ForecastDate;
             }
-            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName, ForecastDate);
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
             if (result == null)
             {
                 ViewBag.error = true;
