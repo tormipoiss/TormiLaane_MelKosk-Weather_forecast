@@ -46,6 +46,7 @@
             }
         }
         <div id="shareLink" hidden>@ViewBag.ShareLink</div>
+        <div id="city" hidden>@ViewBag.City</div>
     </div>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -65,7 +66,7 @@
     </div>
     <script type="text/javascript">
         function showModal(){
-        fetch(`/Home/ShareLink?city=@ViewBag.City&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken`, {
+        fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken`, {
             method: 'POST'
         })
          $(document).ready(function() {
