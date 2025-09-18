@@ -8,6 +8,6 @@ namespace Weather_forecast.Models
         public string ShareToken { get; set; }
         public string UserId { get; set; }
         public string City { get; set; }
-        //public int ViewCount { get; set; }
+        public int ViewCount { get; set; }
     }
 }
