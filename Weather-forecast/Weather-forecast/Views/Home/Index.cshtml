@@ -37,10 +37,11 @@
                     forecastTime = forecastTime.Substring(0, 5);
                     <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
                         <tr style="border: 3px solid black">
-                            <th colspan="2" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@forecastTime)</th>
+                            <th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@forecastTime)</th>
                         </tr>
                         <tr style="border: 3px solid black">
-                            <td style="text-align: center; padding: 10px;">
+                            <td style="text-align: center; padding: 10px; font-size: 40px; padding: 10px; white-space: nowrap">
+                                @Model.Weather.currentConditions.conditions<br />
                                 @switch (Model.Weather.currentConditions.icon)
                                 {
                                     case "snow":
@@ -97,6 +98,20 @@
                                 }
                             </td>
                             <td style="text-align: center; font-size: 40px; padding: 10px;">@Model.Weather.currentConditions.temp°C</td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Feels like<br />@Model.Weather.currentConditions.feelslike°C</td>
+                        </tr>
+                        <tr style="border: 3px solid black">
+                            <td style="text-align: center; font-size: 40px; padding: 10px" colspan="3">@Model.Weather.description</td>
+                        </tr>
+                        <tr style="border: 3px solid black">
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind speed<br />@Model.Weather.currentConditions.windspeed km/h</td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain amount<br />@Model.Weather.currentConditions.precip mm</td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain chance<br />@Model.Weather.currentConditions.precipprob %</td>
+                        </tr>
+                        <tr style="border: 3px solid black">
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Humidity<br />@Model.Weather.currentConditions.humidity %</td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Cloud cover<br />@Model.Weather.currentConditions.cloudcover %</td>
+                            <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Visibility<br />@Model.Weather.currentConditions.visibility km</td>
                         </tr>
                     </table>
                 }
