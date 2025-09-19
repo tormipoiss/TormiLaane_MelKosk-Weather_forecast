@@ -7,5 +7,6 @@ namespace Weather_forecast.ViewModels
         public WeatherforcecastAPIResponseModel Weather { get; set; }
         public City City { get; set; }
         public string EmbedUrl { get; set; }
+        public string LightingEmbedUrl { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace Weather_forecast.Services
                 string uriLatitude = values.latitude.ToString().Replace(",", ".");
                 string uriLongitude = values.longitude.ToString().Replace(",", ".");
                 fixedvalues.EmbedUrl = $"https://maps.google.com/maps?q={uriLatitude}+{uriLongitude}&t=k&z=15&ie=UTF8&iwloc=&output=embed";
+                fixedvalues.LightingEmbedUrl = $"https://map.blitzortung.org/#11.8/{uriLatitude}/{uriLongitude}";//$"https://maps.google.com/maps?q={uriLatitude}+{uriLongitude}&t=k&z=15&ie=UTF8&iwloc=&output=embed";
                 return fixedvalues;
             }
             catch (HttpRequestException httpEx)
