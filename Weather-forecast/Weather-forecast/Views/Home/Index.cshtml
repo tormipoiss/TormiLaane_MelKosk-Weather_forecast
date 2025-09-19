@@ -36,17 +36,20 @@
                 {
                     DateTime currentDate = DateTime.Now;
                     int dayDifference = 0;
-                    int hourTime = currentDate.Hour;
+                    int hourTime = int.Parse(currentDate.ToString("%h"));
                     Console.WriteLine($"View Time: {Model.ForecastDate}");
                     if (Model.ForecastDate != null)
                     {
                         DateTime notNullableDate = (DateTime)Model.ForecastDate;
+                        Console.WriteLine(notNullableDate);
                         dayDifference = (notNullableDate.Date - currentDate.Date).Days;
-                        hourTime = notNullableDate.Date.Hour;
-                        if (dayDifference > 15)
+                        hourTime = int.Parse(notNullableDate.ToString("%h"));
+                        string a = notNullableDate.ToString("%h");
+                        int totalDays = Model.Weather.days.Count - 1;
+                        if (dayDifference > totalDays)
                         {
-                            dayDifference = 15;
-                            ViewBag.dateError = "Cannot forecast weather longer than 15 days, defaulted to day 15";
+                            dayDifference = totalDays;
+                            ViewBag.dateError = $"Cannot forecast weather longer than {totalDays} days, defaulted to day {totalDays}";
                         }
                         if (dayDifference < 0)
                         {
@@ -57,6 +60,7 @@
                     Console.WriteLine($"DayDiff: {dayDifference}");
                     Console.WriteLine($"Hour: {hourTime}");
                     <p>@ViewBag.dateError</p>
+
                     string forecastTime = Model.Weather.days[dayDifference].hours[hourTime].datetime;
                     Console.WriteLine($"Forecast Time:{forecastTime}");
                     @* forecastTime = forecastTime.Substring(0, 5); *@
