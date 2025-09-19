@@ -130,7 +130,10 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            exists.ViewCount++;
+            if(User.Identity != null && !User.Identity.IsAuthenticated)
+            {
+                exists.ViewCount++;
+            }
             await _context.SaveChangesAsync();
 
             var result = await _weatherAPIHandler.FetchDataAsync(city);
