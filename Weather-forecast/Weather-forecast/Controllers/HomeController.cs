@@ -58,12 +58,6 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml", model);
             }
             if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
-            Console.WriteLine($"Controller: {model.ForecastDate}");
-            //DateTime? ForecastDate = null;
-            //if (model.ForecastDate != null)
-            //{
-            //    ForecastDate = model.ForecastDate;
-            //}
             var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
             if (result == null)
             {
@@ -87,7 +81,6 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            Console.WriteLine($"Controller Time: {result.ForecastDate}");
             return View("~/Views/Home/Index.cshtml", result);
         }
 
