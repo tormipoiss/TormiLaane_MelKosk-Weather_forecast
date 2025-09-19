@@ -34,8 +34,32 @@
             {
                 @if (!string.IsNullOrEmpty(Model.Weather.resolvedAddress))
                 {
-                    string forecastTime = Model.Weather.currentConditions.datetime;
-                    forecastTime = forecastTime.Substring(0, 5);
+                    DateTime currentDate = DateTime.Now;
+                    int dayDifference = 0;
+                    int hourTime = currentDate.Hour;
+                    Console.WriteLine($"View Time: {Model.ForecastDate}");
+                    if (Model.ForecastDate != null)
+                    {
+                        DateTime notNullableDate = (DateTime)Model.ForecastDate;
+                        dayDifference = (notNullableDate.Date - currentDate.Date).Days;
+                        hourTime = notNullableDate.Date.Hour;
+                        if (dayDifference > 15)
+                        {
+                            dayDifference = 15;
+                            ViewBag.dateError = "Cannot forecast weather longer than 15 days, defaulted to day 15";
+                        }
+                        if (dayDifference < 0)
+                        {
+                            dayDifference = 0;
+                            ViewBag.dateError = "Cannot forecast weather in the past, defaulted to today";
+                        }
+                    }
+                    Console.WriteLine($"DayDiff: {dayDifference}");
+                    Console.WriteLine($"Hour: {hourTime}");
+                    <p>@ViewBag.dateError</p>
+                    string forecastTime = Model.Weather.days[dayDifference].hours[hourTime].datetime;
+                    Console.WriteLine($"Forecast Time:{forecastTime}");
+                    @* forecastTime = forecastTime.Substring(0, 5); *@
                     <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
                         <tr style="border: 3px solid black">
                             <th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@forecastTime)</th>
@@ -128,3 +152,4 @@ else
         <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
     </div>
 }
+
