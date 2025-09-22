@@ -91,7 +91,7 @@ namespace Weather_forecast.Controllers
                 ViewBag.City = model.City.CityName;
             }
 
-                cityToHistory.HistoryUserId = uid;
+            cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
             {
@@ -116,6 +116,24 @@ namespace Weather_forecast.Controllers
             historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
             return View(historyCities);
         }
+        [HttpGet("Home/Statistics")]
+        [Authorize]
+        public IActionResult ShareLinkStatistics()
+        {
+            var uid = _userManager.GetUserId(User);
+            if(uid == null)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            var allShares = _context.Shares.Where(x=>x.UserId==uid).ToList();
+            if(allShares.Count == 0)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            return View(new LinkShares() { Shares=allShares});
+        }
+
+
         [HttpGet("Home/Shared")]
         [AllowAnonymous]
         public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid)
@@ -125,18 +143,22 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml");
             }
             var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
-            if(exists == null)
+            if (exists == null)
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            if(exists.City != city)
+            if (exists.City != city)
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            var usr = await _context.Users.FirstOrDefaultAsync(x=>x.Id == uid.ToString());
-            if(usr == null)
+            var usr = await _context.Users.FirstOrDefaultAsync(x => x.Id == uid.ToString());
+            if (usr == null)
             {
                 return View("~/Views/Home/Index.cshtml");
+            }
+            if(User.Identity != null && !User.Identity.IsAuthenticated)
+            {
+                exists.ViewCount++;
             }
             await _context.SaveChangesAsync();
 
@@ -147,14 +169,14 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            return View("~/Views/Home/Index.cshtml",result);
+            return View("~/Views/Home/Index.cshtml", result);
         }
         [HttpPost("Home/ShareLink")]
         [Authorize]
         public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid)
         {
             var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
-            if(exists != null)
+            if (exists != null)
             {
                 return BadRequest();
             }

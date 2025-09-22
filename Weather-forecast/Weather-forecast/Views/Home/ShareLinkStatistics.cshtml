@@ -1,0 +1,10 @@
+﻿@model Weather_forecast.ViewModels.LinkShares
+<div class="text-center">
+    <h5 class="display-6">Your shared link statistics</h5>
+    @foreach(CityShare share in Model.Shares)
+    {
+        <div>
+            <p>@share.City has been viewed @share.ViewCount times!, <a href="https://localhost:7089/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId">Click here to view the shared link!</a></p>
+        </div>
+    }
+</div>
