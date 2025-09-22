@@ -132,6 +132,36 @@ namespace Weather_forecast.Controllers
             }
             return View(new LinkShares() { Shares=allShares});
         }
+        [HttpGet("Home/DeleteSharedLink")] // Should be post but im too lazy to add a form to just delete a shared link
+        [Authorize]
+        public async Task<IActionResult> DeleteSharedLink(Guid shareToken)
+        {
+            if (!Request.Headers.TryGetValue("Referer",out var referer) || referer.Count != 1)
+            {
+                return RedirectToAction("Statistics");
+            }
+            if (!referer.First().EndsWith("/Home/Statistics"))
+            {
+                return RedirectToAction("Statistics");
+            }
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            var share = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            if (share == null)
+            {
+                return RedirectToAction("Statistics");
+            }
+            if (share.UserId != uid)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            _context.Shares.Remove(share);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Statistics");
+        }
 
 
         [HttpGet("Home/Shared")]
