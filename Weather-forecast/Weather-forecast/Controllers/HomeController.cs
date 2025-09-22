@@ -31,35 +31,45 @@ namespace Weather_forecast.Controllers
 
         public IActionResult Index()
         {
+            var uid = _userManager.GetUserId(User);
+            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+            if (testHistory != default)
+            {
+                ViewData["showHistory"] = "true";
+            }
             return View();
         }
 
         [HttpPost("Home/City")]
         [Authorize]
-        public async Task<IActionResult> Index(CityAndApi model)
+        public async Task<IActionResult> CityGet(CityAndApi model)
         {
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList.Count > 0)
+            {
+                ViewData["showHistory"] = "true";
+            }
             ViewBag.error = false;
             if (!ModelState.IsValid)
             {
                 return View("~/Views/Home/Index.cshtml", model);
             }
-            //if (string.IsNullOrEmpty(city)) return BadRequest("City can not be null!");
+            if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
             var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
             if (result == null)
             {
                 ViewBag.error = true;
-                return View(model);
+                return View("~/Views/Home/Index.cshtml", model);
             }
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
-            //ApplicationUser? usr = await _userManager.GetUserAsync(User);
-            var uid = _userManager.GetUserId(User);
-            if (uid == null)
-            {
-                ViewBag.error = true;
-                return View(model);
-            }
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
@@ -73,7 +83,17 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            return View(result);
+            return View("~/Views/Home/Index.cshtml", result);
+        }
+
+        [HttpGet("Home/History")]
+        [Authorize]
+        public async Task<IActionResult> History()
+        {
+            var uid = _userManager.GetUserId(User);
+            CityAndApi historyCities = new CityAndApi();
+            historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            return View(historyCities);
         }
 
         public IActionResult Privacy()

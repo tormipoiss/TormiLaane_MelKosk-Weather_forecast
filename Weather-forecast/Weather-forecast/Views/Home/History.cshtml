@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Weather_forecast.ViewModels
+@inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
+@model CityAndApi
+@{
+    ViewData["Title"] = "Search history";
+}
+
+@if (signInManager.IsSignedIn(User))
+{
+    <div class="text-center">
+        <h1 class="display-4">Search history</h1>
+        <form asp-action="Index" asp-controller="Home" method="get" style="display: inline-block; margin-right: 8px">
+            <button type="submit" style="width:150px; height:30px;">Go back</button>
+        </form>
+        @if (Model != null)
+        {
+            int numeration = 1;
+            @foreach (City city in Model.Cities)
+            {
+                string historyCity = numeration.ToString();
+                historyCity += $". City name: {city.CityName}, date of search: {city.DateOfSearch}";
+                Model.City = city;
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; margin-top: 6px; text-align: center; justify-content:center">
+                    <span>@historyCity</span> 
+                    <form asp-action="City" asp-controller="Home" method="post">
+                        <button style="height:30px" type="submit">Search weather for this city</button>
+                        <input asp-for="City.CityName" style="display:none" />
+                    </form>
+                </div>
+                numeration++;
+            }
+        }
+    </div>
+}
