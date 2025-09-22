@@ -8,5 +8,6 @@ namespace Weather_forecast.ViewModels
         public City City { get; set; }
         public List<City> Cities { get; set; }
         public string EmbedUrl { get; set; }
+        public string LightingEmbedUrl { get; set; }
     }
 }

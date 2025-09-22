@@ -110,10 +110,25 @@ else if (ViewBag.SharedUrl != null)
                         @Model.Weather.resolvedAddress temperatuur on @Model.Weather.currentConditions.temp C
                     </div>
                 }
-                <iframe width="600" height="500" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                    <button onclick="showGoogleMap()">Show google map</button>
+                    <button onclick="showLightingMap()">Show lighting map</button>
+                </div>
+                <iframe id="googlemap" width="800" height="550" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
+                <iframe id="lightingmap" src=@Model.LightingEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>
             }
         }
     </div>
+    <script type="text/javascript">
+        function showGoogleMap(){
+            document.getElementById("lightingmap").hidden = true
+            document.getElementById("googlemap").hidden = false
+        }
+        function showLightingMap(){
+            document.getElementById("googlemap").hidden = true
+            document.getElementById("lightingmap").hidden = false
+        }
+    </script>
 }
 else
 {
