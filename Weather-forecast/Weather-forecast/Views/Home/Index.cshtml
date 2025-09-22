@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 @if (signInManager.IsSignedIn(User))
 {
     <div class="text-center">
@@ -37,6 +38,79 @@
                         @Model.Weather.resolvedAddress temperature is @Model.Weather.currentConditions.temp C
                     </div>
                 }
+                <button onclick="showModal()">Share this forecast!</button>
+                <iframe width="600" height="500" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+
+
+            }
+        }
+        <div id="shareLink" hidden>@ViewBag.ShareLink</div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Share your link!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <a>@ViewBag.ShareLink</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="copyToClipboard()">Copy to clipboard!</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function showModal(){
+        fetch(`/Home/ShareLink?city=@ViewBag.City&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken`, {
+            method: 'POST'
+        })
+         $(document).ready(function() {
+             $("#exampleModal").modal("show");
+         });
+        }
+
+
+        @*https://masteringjs.io/tutorials/fundamentals/copy-to-clipboard*@
+        function copyToClipboard() {
+          const element = document.querySelector('#shareLink');
+          navigator.clipboard.writeText(element.innerText).then(function() {
+          console.log('Async: Copying to clipboard was successful!');
+        }, function(err) {
+          console.error('Async: Could not copy text: ', err);
+        });
+        }
+    </script>
+}
+else if (ViewBag.SharedUrl != null)
+{
+    <div class="text-center">
+        <div>
+            <h4>Want to see the forecast without relying on other people to share it to you?</h4>
+            <a class="text-dark h4" asp-area="" asp-controller="Account" asp-action="Register"> Register </a>
+             | 
+            <a class="text-dark h4" asp-controller="Account" asp-action="Login"> Login </a>
+        </div>
+        @if (Model != null)
+        {
+            @if (ViewBag.error == true)
+            {
+                <div style="margin-top: 0.5rem;">
+                    Failed to fetch weather data for @Model.City.CityName
+                </div>
+            }
+            @if (Model.Weather != null)
+            {
+                @if (Model.Weather.resolvedAddress != null || Model.Weather.resolvedAddress != "")
+                {
+                    <div style="margin-top: 0.5rem;">
+                        @Model.Weather.resolvedAddress temperatuur on @Model.Weather.currentConditions.temp C
+                    </div>
+                }
+                <iframe width="600" height="500" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
             }
         }
     </div>
@@ -49,3 +123,4 @@ else
         <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
     </div>
 }
+@*<iframe width="600" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=59.4372+24.7453&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>*@

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -71,6 +72,31 @@ namespace Weather_forecast.Controllers
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
+            //ApplicationUser? usr = await _userManager.GetUserAsync(User);
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                ViewBag.error = true;
+                return View(model);
+            }
+            var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
+            if (alreadyShared != null)
+            {
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}";
+                ViewBag.Uid = uid;
+                ViewBag.ShareToken = alreadyShared.ShareToken;
+                ViewBag.City = model.City.CityName;
+            }
+            else
+            {
+                string shareToken = Guid.NewGuid().ToString();
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}";
+                ViewBag.Uid = uid;
+                ViewBag.ShareToken = shareToken;
+                ViewBag.City = model.City.CityName;
+            }
+
+                cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
             {
@@ -94,6 +120,64 @@ namespace Weather_forecast.Controllers
             CityAndApi historyCities = new CityAndApi();
             historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
             return View(historyCities);
+        }
+        [HttpGet("Home/Shared")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid)
+        {
+            if (city == null)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            if(exists == null)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            if(exists.City != city)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            var usr = await _context.Users.FirstOrDefaultAsync(x=>x.Id == uid.ToString());
+            if(usr == null)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            await _context.SaveChangesAsync();
+
+            var result = await _weatherAPIHandler.FetchDataAsync(city);
+            ViewBag.SharedUrl = true;
+            if (result == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            return View("~/Views/Home/Index.cshtml",result);
+        }
+        [HttpPost("Home/ShareLink")]
+        [Authorize]
+        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid)
+        {
+            var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            if(exists != null)
+            {
+                return BadRequest();
+            }
+            var userExistsId = _userManager.GetUserId(User);
+            if (userExistsId == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            if (userExistsId != uid.ToString())
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString() });
+            await _context.SaveChangesAsync();
+            //var existingUserByName = await _userManager.FindByNameAsync(User.Identity.Name);
+            return Ok();
         }
 
         public IActionResult Privacy()

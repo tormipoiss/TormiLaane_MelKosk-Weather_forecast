@@ -12,5 +12,6 @@ namespace Weather_forecast.Data
         }
         public DbSet<History> SearchHistory { get; set; }
         public DbSet<City> Cities { get; set; }
+        public DbSet<CityShare> Shares { get; set; }
     }
 }
