@@ -68,6 +68,7 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
+            result.ForecastDate = model.ForecastDate;
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;

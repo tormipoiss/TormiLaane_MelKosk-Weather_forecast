@@ -9,5 +9,6 @@ namespace Weather_forecast.ViewModels
         public List<City> Cities { get; set; }
         public string EmbedUrl { get; set; }
         public string LightingEmbedUrl { get; set; }
+        public DateTime? ForecastDate { get; set; }
     }
 }
