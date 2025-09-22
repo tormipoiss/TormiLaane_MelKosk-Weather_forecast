@@ -73,12 +73,6 @@ namespace Weather_forecast.Controllers
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
             //ApplicationUser? usr = await _userManager.GetUserAsync(User);
-            var uid = _userManager.GetUserId(User);
-            if (uid == null)
-            {
-                ViewBag.error = true;
-                return View(model);
-            }
             var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
