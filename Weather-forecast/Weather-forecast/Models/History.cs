@@ -7,6 +7,7 @@ namespace Weather_forecast.Models
     {
         [Key]
         public ulong Id{ get; set; }
+        [Required]
         public string City { get; set; } = "";
         public DateTime DateAndTimeOfSearch { get; set; }
     }
