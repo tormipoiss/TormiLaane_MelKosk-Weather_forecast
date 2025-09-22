@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Weather_forecast.Models;
 using Weather_forecast.ViewModels;
+using System.Security.Principal;
 
 namespace Weather_forecast.Controllers
 {
@@ -52,7 +53,6 @@ namespace Weather_forecast.Controllers
         [AllowAnonymous]
         public IActionResult Login()
         {
-
             return View();
         }
 
@@ -63,7 +63,12 @@ namespace Weather_forecast.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(model.UserName);
-                if (user == null) return RedirectToAction("Index", "Home");
+                if (user == null)
+                {
+                    ViewBag.ErrorTile = "Invalid login";
+                    ViewBag.ErrorMessage = "Username or password is incorrect";
+                    return View("Error");
+                }
                 var check = await _userManager.CheckPasswordAsync(user, model.Password);
                 if (!check)
                 {
@@ -74,7 +79,7 @@ namespace Weather_forecast.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return View("~/Views/Home/Index.cshtml");
                 }
                 ViewBag.ErrorTile = "Invalid login";
                 ViewBag.ErrorMessage = "Username or password is incorrect";
