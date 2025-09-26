@@ -10,16 +10,26 @@ namespace Weather_forecast.Services
         private readonly HttpClient _httpClient;
         //https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Tallinn%2C%2037%2C%20EE?unitGroup=metric&key=WMB6TMRW43KZPHAS6L8UHCN2S&contentType=json
         private static readonly string _apiKey = "WMB6TMRW43KZPHAS6L8UHCN2S"; // dont hardcode secrets
-        private static readonly string _baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{0}"+$"?unitGroup=metric&key={_apiKey}&contentType=json";
+        // metric / us
+        private static readonly string _baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{0}?unitGroup={1}"+$"&key={_apiKey}&contentType=json";
         public WeatherAPIHandler(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-        public async Task<CityAndApi?> FetchDataAsync(string city)
+        public async Task<CityAndApi?> FetchDataAsync(string city,bool metric = true)
         {
             try
             {
-                var res = await _httpClient.GetAsync(string.Format(_baseUrl, city));
+                string formatted = "";
+                if (metric)
+                {
+                    formatted = string.Format(_baseUrl, city, "metric");
+                }
+                else
+                {
+                    formatted = string.Format(_baseUrl, city, "us");
+                }
+                var res = await _httpClient.GetAsync(formatted);
                 res.EnsureSuccessStatusCode();
                 string content = await res.Content.ReadAsStringAsync();
                 var values = JsonSerializer.Deserialize<WeatherforcecastAPIResponseModel>(content);
