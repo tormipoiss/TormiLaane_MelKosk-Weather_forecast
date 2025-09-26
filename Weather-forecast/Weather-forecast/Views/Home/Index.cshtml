@@ -22,8 +22,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="City.CityName" />
             <input asp-for="ForecastDate" />
-            <button type="submit" style="width:100px; height:30px;">Search</button>
-            <span asp-validation-for="City.CityName" class="text-danger"></span>
+            <label for="typeCheckbox">Metric</label>
+            <input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
+            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">Search specific day</button><br />
+            <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
+            <input asp-for="DayAmount" />
+            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">Search multiple days</button>
         </form>
     }
     else if (ViewBag.SharedUrl != null)
@@ -135,23 +139,162 @@
                                     break;
                             }
                         </td>
-                        <td style="text-align: center; font-size: 40px; padding: 10px;">@Model.Weather.days[dayDifference].hours[hourTime].temp°C</td>
-                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Feels like<br />@Model.Weather.days[dayDifference].hours[hourTime].feelslike°C</td>
+                        <td style="text-align: center; font-size: 40px; padding: 10px;">@Model.Weather.days[dayDifference].hours[hourTime].temp°@Model.Units.COrF</td>
+                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Feels like<br />@Model.Weather.days[dayDifference].hours[hourTime].temp°@Model.Units.COrF</td>
                     </tr>
                     <tr style="border: 3px solid black">
                         <td style="text-align: center; font-size: 40px; padding: 10px" colspan="3">@Model.Weather.description</td>
                     </tr>
                     <tr style="border: 3px solid black">
-                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind speed<br />@Model.Weather.days[dayDifference].hours[hourTime].windspeed km/h</td>
-                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain amount<br />@Model.Weather.days[dayDifference].hours[hourTime].precip mm</td>
+                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind speed<br />@Model.Weather.days[dayDifference].hours[hourTime].windspeed @Model.Units.KmOrMile/h</td>
+                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain amount<br />@Model.Weather.days[dayDifference].hours[hourTime].precip @Model.Units.MmOrInches</td>
                         <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain chance<br />@Model.Weather.days[dayDifference].hours[hourTime].precipprob %</td>
                     </tr>
                     <tr style="border: 3px solid black">
                         <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Humidity<br />@Model.Weather.days[dayDifference].hours[hourTime].humidity %</td>
                         <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Cloud cover<br />@Model.Weather.days[dayDifference].hours[hourTime].cloudcover %</td>
-                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Visibility<br />@Model.Weather.days[dayDifference].hours[hourTime].visibility km</td>
+                        <td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Visibility<br />@Model.Weather.days[dayDifference].hours[hourTime].visibility @Model.Units.KmOrMile</td>
                     </tr>
                 </table>
+            }
+            else
+            {
+                if (Model.DayAmount == null)
+                {
+                    Model.DayAmount = 0;
+                }
+                DateTime displayDate = DateTime.Now;
+                DateTime currentDate = DateTime.Now;
+                int dayDifference = 0;
+                if (Model.DayAmount > 0 || Model.DayAmount < 0)
+                {
+                    DateTime maxDate = currentDate.AddDays((double)Model.DayAmount);
+                    dayDifference = (maxDate.Date - currentDate.Date).Days - 1;
+                    int totalDays = Model.Weather.days.Count - 1;
+                    if (dayDifference > totalDays)
+                    {
+                        dayDifference = totalDays;
+                        ViewBag.dateError = $"Cannot forecast weather longer than {totalDays} days, defaulted to day {totalDays}";
+                    }
+                    if (dayDifference < 0)
+                    {
+                        dayDifference = 0;
+                        ViewBag.dateError = "Cannot forecast weather in the past, defaulted to today";
+                    }
+                    Model.DayAmount = dayDifference;
+                }
+                <h1>@Model.Weather.resolvedAddress</h1>
+                <p style="color: red;">@ViewBag.dateError</p>
+                <div style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 10px; white-space:nowrap">
+                    @for (int i = 0; i <= dayDifference; i++)
+                    {
+                        displayDate = displayDate.AddDays(1);
+                        <table style="border: 3px solid black; width: 400px;">
+                            <tr style="border: 3px solid black">
+                                @if (i == 0)
+                                {
+                                    <th colspan="2" style="text-align:center; font-size: 40px;">@displayDate.ToString().Substring(0, 10) (Today)</th>
+                                }
+                                else if (i == 1)
+                                {
+                                    <th colspan="2" style="text-align:center; font-size: 40px;">@displayDate.ToString().Substring(0, 10) (Tomorrow)</th>
+                                }
+                                else
+                                {
+                                    <th colspan="2" style="text-align:center; font-size: 40px;">@displayDate.ToString().Substring(0, 10)</th>
+                                }
+                            </tr>
+                            @for (int j = 0; j < 4; j++)
+                            {
+                                string timeOfDay = "";
+                                int hourTime = 0;
+                                @switch (j)
+                                {
+                                    case 0:
+                                        timeOfDay = "Night (00:00)";
+                                        hourTime = 0;
+                                        break;
+                                    case 1:
+                                        timeOfDay = "Morning (06:00)";
+                                        hourTime = 6;
+                                        break;
+                                    case 2:
+                                        timeOfDay = "Day (12:00)";
+                                        hourTime = 12;
+                                        break;
+                                    case 3:
+                                        timeOfDay = "Evening (18:00)";
+                                        hourTime = 18;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                <tr>
+                                    <th colspan="2" style="text-align:center; font-size: 40px;">@timeOfDay</th>
+                                </tr>
+                                <tr style="border-bottom: 3px solid black;">
+                                    <td style="text-align: center; padding: 10px; font-size: 40px">
+                                        @switch (Model.Weather.days[i].hours[hourTime].icon)
+                                        {
+                                            case "snow":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow.svg">
+                                                break;
+                                            case "snow-showers-day":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-day.svg">
+                                                break;
+                                            case "snow-showers-night":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-night.svg">
+                                                break;
+                                            case "thunder-rain":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-rain.svg">
+                                                break;
+                                            case "thunder-showers-day":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-day.svg">
+                                                break;
+                                            case "thunder-showers-night":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-night.svg">
+                                                break;
+                                            case "rain":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/rain.svg">
+                                                break;
+                                            case "showers-day":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-day.svg">
+                                                break;
+                                            case "showers-night":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-night.svg">
+                                                break;
+                                            case "fog":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/1st%20Set%20-%20Color/fog.svg">
+                                                break;
+                                            case "wind":
+                                                <img style="width:250px;" src="https://www.svgrepo.com/show/528823/wind.svg">
+                                                break;
+                                            case "cloudy":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/cloudy.svg">
+                                                break;
+                                            case "partly-cloudy-day":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-day.svg">
+                                                break;
+                                            case "partly-cloudy-night":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-night.svg">
+                                                break;
+                                            case "clear-day":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-day.svg">
+                                                break;
+                                            case "clear-night":
+                                                <img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-night.svg">
+                                                break;
+                                            default:
+                                                <span>Image for: @Model.Weather.days[i].hours[hourTime].icon does not exist</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td style="text-align: center; font-size: 40px; padding: 10px">@Model.Weather.days[i].hours[hourTime].temp°@Model.Units.COrF<br />Wind speed<br />@Model.Weather.days[i].hours[hourTime].windspeed @Model.Units.KmOrMile/h</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
             }
             @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
             {
@@ -191,7 +334,7 @@
     </div>
     <script type="text/javascript">
         function showModal(){
-        fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken`, {
+        fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
         method: 'POST'
         })
         $(document).ready(function() {

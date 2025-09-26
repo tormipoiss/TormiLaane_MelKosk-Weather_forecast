@@ -62,12 +62,31 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml", model);
             }
             if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
-            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName);
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName,model.Metric);
             if (result == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
+            if (model.Metric)
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "km",
+                    COrF = "C",
+                    MmOrInches = "mm"
+                };
+            }
+            else
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "miles",
+                    COrF = "F",
+                    MmOrInches = "inches"
+                };
+            }
+            result.Metric = model.Metric;
             result.ForecastDate = model.ForecastDate;
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
@@ -77,20 +96,18 @@ namespace Weather_forecast.Controllers
             var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}";
-                ViewBag.Uid = uid;
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}";
                 ViewBag.ShareToken = alreadyShared.ShareToken;
-                ViewBag.City = model.City.CityName;
             }
             else
             {
                 string shareToken = Guid.NewGuid().ToString();
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}";
-                ViewBag.Uid = uid;
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}";
                 ViewBag.ShareToken = shareToken;
-                ViewBag.City = model.City.CityName;
             }
-
+            ViewBag.City = model.City.CityName;
+            ViewBag.Uid = uid;
+            ViewBag.Metric = model.Metric;
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
@@ -166,7 +183,7 @@ namespace Weather_forecast.Controllers
 
         [HttpGet("Home/Shared")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid)
+        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid,bool metric)
         {
             if (city == null)
             {
@@ -191,19 +208,36 @@ namespace Weather_forecast.Controllers
                 exists.ViewCount++;
             }
             await _context.SaveChangesAsync();
-
-            var result = await _weatherAPIHandler.FetchDataAsync(city);
+            var result = await _weatherAPIHandler.FetchDataAsync(city,metric);
             ViewBag.SharedUrl = true;
             if (result == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
+            if (metric)
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "km",
+                    COrF = "C",
+                    MmOrInches = "mm"
+                };
+            }
+            else
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "miles",
+                    COrF = "F",
+                    MmOrInches = "inches"
+                };
+            }
             return View("~/Views/Home/Index.cshtml", result);
         }
         [HttpPost("Home/ShareLink")]
         [Authorize]
-        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid)
+        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid,bool metric)
         {
             var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
             if (exists != null)
@@ -221,7 +255,7 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString() });
+            await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(),Metric=metric});
             await _context.SaveChangesAsync();
             //var existingUserByName = await _userManager.FindByNameAsync(User.Identity.Name);
             return Ok();
