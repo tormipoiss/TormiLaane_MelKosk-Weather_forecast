@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
 @model Weather_forecast.ViewModels.CityAndApi
 @{
@@ -20,10 +20,11 @@
         <p>Search for a city to see its current weather:</p>
         <form asp-action="City" asp-controller="Home" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <label asp-for="City.CityName">City name: </label>
             <input asp-for="City.CityName" />
+            <span asp-validation-for="City.CityName" class="text-danger"></span><br />
+            <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
             <input asp-for="ForecastDate" />
-            <label for="typeCheckbox">Metric</label>
-            <input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
             <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">Search specific day</button><br />
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
             <input asp-for="DayAmount" />
@@ -47,9 +48,9 @@
                 Failed to fetch weather data for @Model.City.CityName
             </div>
         }
-        @if (Model.Weather != null)
+        @if (Model.Weather != null && !string.IsNullOrEmpty(Model.Weather.resolvedAddress))
         {
-            @if (!string.IsNullOrEmpty(Model.Weather.resolvedAddress))
+            @if (Model.DisplayMultipleDays == false)
             {
                 DateTime currentDate = DateTime.Now;
                 DateTime displayDate = DateTime.Now;
@@ -289,7 +290,7 @@
                                                 break;
                                         }
                                     </td>
-                                    <td style="text-align: center; font-size: 40px; padding: 10px">@Model.Weather.days[i].hours[hourTime].temp°@Model.Units.COrF<br />Wind speed<br />@Model.Weather.days[i].hours[hourTime].windspeed @Model.Units.KmOrMile/h</td>
+                                    <td style="text-align: center; font-size: 40px; padding: 10px">@Model.Weather.days[i].hours[hourTime].temp°C<br />Wind speed<br />@Model.Weather.days[i].hours[hourTime].windspeed km/h</td>
                                 </tr>
                             }
                         </table>

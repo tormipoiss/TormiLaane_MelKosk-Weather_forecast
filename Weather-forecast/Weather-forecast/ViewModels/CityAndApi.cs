@@ -1,4 +1,5 @@
-﻿using Weather_forecast.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Weather_forecast.Models;
 
 namespace Weather_forecast.ViewModels
 {
@@ -12,5 +13,7 @@ namespace Weather_forecast.ViewModels
         public string LightingEmbedUrl { get; set; }
         public bool Metric { get; set; } = true;
         public DateTime? ForecastDate { get; set; }
+        public int? DayAmount { get; set; }
+        public bool DisplayMultipleDays { get; set; }
     }
 }
