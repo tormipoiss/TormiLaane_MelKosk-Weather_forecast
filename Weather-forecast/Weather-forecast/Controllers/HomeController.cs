@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +43,7 @@ namespace Weather_forecast.Controllers
 
         [HttpPost("Home/City")]
         [Authorize]
-        public async Task<IActionResult> CityGet(CityAndApi model)
+        public async Task<IActionResult> CityGet(CityAndApi model, string buttonType)
         {
             var uid = _userManager.GetUserId(User);
             if (uid == null)
@@ -104,6 +104,15 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
+            if (buttonType == "MultipleDays")
+            {
+                result.DisplayMultipleDays = true;
+                result.DayAmount = model.DayAmount;
+            }
+            else
+            {
+                result.DisplayMultipleDays = false;
+            }
             return View("~/Views/Home/Index.cshtml", result);
         }
 
