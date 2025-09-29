@@ -133,6 +133,40 @@ namespace Weather_forecast.Controllers
             return View("~/Views/Home/Index.cshtml", result);
         }
 
+        [HttpGet("Home/GetForecastDetails")]
+        [Authorize]
+        public async Task<IActionResult> GetForecastDetails(string cityName, bool metric, DateTime? forecastDate)
+        {
+            Console.WriteLine($"City name: {cityName}");
+            var result = await _weatherAPIHandler.FetchDataAsync(cityName, metric);
+            if (result == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            if (metric)
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "km",
+                    COrF = "C",
+                    MmOrInches = "mm"
+                };
+            }
+            else
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "miles",
+                    COrF = "F",
+                    MmOrInches = "inches"
+                };
+            }
+            result.Metric = metric;
+            result.ForecastDate = forecastDate;
+            return PartialView(result);
+        }
+
         [HttpGet("Home/History")]
         [Authorize]
         public async Task<IActionResult> History()

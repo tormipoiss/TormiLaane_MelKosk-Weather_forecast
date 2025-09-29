@@ -82,7 +82,9 @@
 
 				<table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
 					<tr style="border: 3px solid black">
-						<th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)</th>
+						<th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
+                            <button onclick="GetForecastDetailsPartial(@Model.City.CityName, @Model.Metric, @Model.ForecastDate)">Forecast Details</button>
+                        </th>
 					</tr>
 					<tr style="border: 3px solid black">
 						<td style="text-align: center; padding: 10px; font-size: 40px; padding: 10px; white-space: nowrap">
@@ -386,6 +388,34 @@ else
 		<a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
 	</div>
 }
+
+<div id="modal_product_details" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="div_product_details"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetForecastDetailsPartial(cityName, metric, forecastDate){
+       $.get('@Url.Action("GetForecastDetails", "Home")', { cityName: cityName, metric: metric, forecastDate: forecastDate}, function(data) {
+          $('#div_product_details').html(data)
+          $('#modal_product_details').modal('show')
+       });
+    }
+</script>
 
 
 @*
