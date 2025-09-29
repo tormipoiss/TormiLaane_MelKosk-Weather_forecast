@@ -96,18 +96,19 @@ namespace Weather_forecast.Controllers
             var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}";
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
                 ViewBag.ShareToken = alreadyShared.ShareToken;
             }
             else
             {
                 string shareToken = Guid.NewGuid().ToString();
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}";
+                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
                 ViewBag.ShareToken = shareToken;
             }
             ViewBag.City = model.City.CityName;
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
+            ViewBag.ForecastDate = model.ForecastDate;
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
@@ -192,7 +193,7 @@ namespace Weather_forecast.Controllers
 
         [HttpGet("Home/Shared")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid,bool metric)
+        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate)
         {
             if (city == null)
             {
@@ -241,6 +242,14 @@ namespace Weather_forecast.Controllers
                     COrF = "F",
                     MmOrInches = "inches"
                 };
+            }
+            if(foreCastDate == null)
+            {
+                result.ForecastDate = DateTime.Now;
+            }
+            else
+            {
+                result.ForecastDate = DateTime.Parse(foreCastDate);
             }
             return View("~/Views/Home/Index.cshtml", result);
         }
