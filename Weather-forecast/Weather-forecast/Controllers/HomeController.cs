@@ -96,13 +96,13 @@ namespace Weather_forecast.Controllers
             var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
                 ViewBag.ShareToken = alreadyShared.ShareToken;
             }
             else
             {
                 string shareToken = Guid.NewGuid().ToString();
-                ViewBag.ShareLink = $"https://localhost:7089/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
                 ViewBag.ShareToken = shareToken;
             }
             ViewBag.City = model.City.CityName;
