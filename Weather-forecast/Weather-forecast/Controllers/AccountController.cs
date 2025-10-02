@@ -39,6 +39,7 @@ namespace Weather_forecast.Controllers
                 {
                     UserName = model.Username,
                     Email = model.Username,
+                    GlobalMetric = true
                 };
                 var result = await _userManager.CreateAsync(account, model.Password);
                 if (result.Succeeded)
@@ -98,11 +99,40 @@ namespace Weather_forecast.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             ViewData["showHistory"] = "false";
             return RedirectToAction("Index", "Home");
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SettingsChanged(AccountSettings settings)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            user.GlobalMetric = settings.GlobalMetric;
+            await _context.SaveChangesAsync();
+            return View("AccountSettings",settings);
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> AccountSettings()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            AccountSettings settings = new()
+            {
+                GlobalMetric = user.GlobalMetric,
+            };
+            return View(settings);
         }
     }
 }

@@ -1,13 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Security.Claims;
-using System.Security.Principal;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
@@ -51,6 +46,12 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
             List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
             if (testHistoryCityList.Count > 0)
             {
@@ -62,13 +63,13 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml", model);
             }
             if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
-            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName,model.Metric);
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName,user.GlobalMetric);
             if (result == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
-            if (model.Metric)
+            if (user.GlobalMetric)
             {
                 result.Units = new()
                 {
@@ -87,13 +88,13 @@ namespace Weather_forecast.Controllers
                 };
             }
             result.Metric = model.Metric;
-            result.ForecastDate = model.ForecastDate;
+            result.ForecastDate = model.ForecastDate != null ? model.ForecastDate : DateTime.Now;
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
             //ApplicationUser? usr = await _userManager.GetUserAsync(User);
-            var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
+            var alreadyShared = await _context.Shares.Where(u=>u.UserId==uid).FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
                 ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
@@ -108,6 +109,7 @@ namespace Weather_forecast.Controllers
             ViewBag.City = model.City.CityName;
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
+            //ViewBag.Metric = model.Metric;
             ViewBag.ForecastDate = model.ForecastDate;
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
