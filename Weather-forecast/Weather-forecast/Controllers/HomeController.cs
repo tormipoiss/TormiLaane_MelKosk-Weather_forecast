@@ -12,6 +12,9 @@ using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
 using Weather_forecast.ViewModels;
+using QRCoder;
+using System.Drawing;
+using System.Reflection.Emit;
 
 namespace Weather_forecast.Controllers
 {
@@ -87,12 +90,22 @@ namespace Weather_forecast.Controllers
                 };
             }
             result.Metric = model.Metric;
-            result.ForecastDate = model.ForecastDate;
+            if (model.ForecastDate == null)
+            {
+                result.ForecastDate = DateTime.Now;
+            }
+            else
+            {
+                result.ForecastDate = model.ForecastDate;
+            }
+
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
             //ApplicationUser? usr = await _userManager.GetUserAsync(User);
+
+
             var alreadyShared = await _context.Shares.FirstOrDefaultAsync(x=>x.City==model.City.CityName);
             if (alreadyShared != null)
             {
@@ -109,6 +122,13 @@ namespace Weather_forecast.Controllers
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
             ViewBag.ForecastDate = model.ForecastDate;
+            var qrGen = new QRCodeGenerator();
+            var imgType = Base64QRCode.ImageType.Png;
+            QRCodeData qrCodeData = qrGen.CreateQrCode(ViewBag.ShareLink, QRCodeGenerator.ECCLevel.Q);
+            Base64QRCode qrCode = new Base64QRCode(qrCodeData);
+            string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
+            result.QrCodeBase64 = qrCodeImageAsBase64;
+
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
             if (testHistory == default)
@@ -251,6 +271,12 @@ namespace Weather_forecast.Controllers
             {
                 result.ForecastDate = DateTime.Parse(foreCastDate);
             }
+            var qrGen = new QRCodeGenerator();
+            var imgType = Base64QRCode.ImageType.Png;
+            QRCodeData qrCodeData = qrGen.CreateQrCode($"https://localhost:5001/Home/Shared?city={city}&shareToken={shareToken}&uid={uid}&metric={metric}&foreCastDate={result.ForecastDate}", QRCodeGenerator.ECCLevel.Q);
+            Base64QRCode qrCode = new Base64QRCode(qrCodeData);
+            string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
+            result.QrCodeBase64 = qrCodeImageAsBase64;
             return View("~/Views/Home/Index.cshtml", result);
         }
         [HttpPost("Home/ShareLink")]
