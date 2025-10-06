@@ -139,15 +139,21 @@ namespace Weather_forecast.Controllers
 
         [HttpGet("Home/GetForecastDetails")]
         [Authorize]
-        public async Task<IActionResult> GetForecastDetails(string resolvedAddress, bool metric, string forecastDate)
+        public async Task<IActionResult> GetForecastDetails(string resolvedAddress, string forecastDate)
         {
-            var result = await _weatherAPIHandler.FetchDataAsync(resolvedAddress, metric);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            var result = await _weatherAPIHandler.FetchDataAsync(resolvedAddress, user.GlobalMetric);
             if (result == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            if (metric)
+            if (user.GlobalMetric)
             {
                 result.Units = new()
                 {
@@ -167,7 +173,7 @@ namespace Weather_forecast.Controllers
                     MOrFt = "ft"
                 };
             }
-            result.Metric = metric;
+            result.Metric = user.GlobalMetric;
             try
             {
                 result.ForecastDate = DateTime.Parse(forecastDate);
