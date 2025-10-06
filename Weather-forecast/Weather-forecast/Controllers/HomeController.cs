@@ -12,6 +12,7 @@ using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
 using Weather_forecast.ViewModels;
+using System.Globalization;
 
 namespace Weather_forecast.Controllers
 {
@@ -135,10 +136,9 @@ namespace Weather_forecast.Controllers
 
         [HttpGet("Home/GetForecastDetails")]
         [Authorize]
-        public async Task<IActionResult> GetForecastDetails(string cityName, bool metric, DateTime? forecastDate)
+        public async Task<IActionResult> GetForecastDetails(string resolvedAddress, bool metric, string forecastDate)
         {
-            Console.WriteLine($"City name: {cityName}");
-            var result = await _weatherAPIHandler.FetchDataAsync(cityName, metric);
+            var result = await _weatherAPIHandler.FetchDataAsync(resolvedAddress, metric);
             if (result == null)
             {
                 ViewBag.error = true;
@@ -150,7 +150,8 @@ namespace Weather_forecast.Controllers
                 {
                     KmOrMile = "km",
                     COrF = "C",
-                    MmOrInches = "mm"
+                    MmOrInches = "mm",
+                    MOrFt = "m"
                 };
             }
             else
@@ -159,12 +160,21 @@ namespace Weather_forecast.Controllers
                 {
                     KmOrMile = "miles",
                     COrF = "F",
-                    MmOrInches = "inches"
+                    MmOrInches = "inches",
+                    MOrFt = "ft"
                 };
             }
             result.Metric = metric;
-            result.ForecastDate = forecastDate;
-            return PartialView(result);
+            try
+            {
+                result.ForecastDate = DateTime.Parse(forecastDate);
+            }
+            catch
+            {
+                result.ForecastDate = null;
+            }
+
+            return PartialView("~/Views/Home/GetForecastDetails.cshtml", result);
         }
 
         [HttpGet("Home/History")]

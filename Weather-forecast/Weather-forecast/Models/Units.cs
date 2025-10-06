@@ -5,5 +5,6 @@
         public string KmOrMile { get; set; } = "km";
         public string MmOrInches { get; set; } = "mm";
         public string COrF { get; set; } = "C";
+        public string MOrFt { get; set; } = "m";
     }
 }
