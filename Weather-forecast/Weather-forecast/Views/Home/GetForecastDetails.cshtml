@@ -1,0 +1,199 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
+@model Weather_forecast.ViewModels.CityAndApi
+
+<div class="text-center">
+    @if (signInManager.IsSignedIn(User))
+    {
+        @if (Model != null)
+		{
+			@if (ViewBag.error == true)
+			{
+				<div style="margin-top: 0.5rem;">
+					Failed to fetch weather data for @Model.City.CityName
+				</div>
+			}
+			@if (Model.Weather != null && !string.IsNullOrEmpty(Model.Weather.resolvedAddress))
+			{
+				DateTime currentDate = DateTime.Now;
+				DateTime displayDate = DateTime.Now;
+				
+				int dayDifference = 0;
+				int hourTime = int.Parse(currentDate.ToString("%h"));
+				if (Model.ForecastDate != null)
+				{
+					DateTime notNullableDate = (DateTime)Model.ForecastDate;
+					dayDifference = (notNullableDate.Date - currentDate.Date).Days;
+					hourTime = int.Parse(notNullableDate.ToString("%H"));
+					int totalDays = Model.Weather.days.Count - 1;
+					if (dayDifference > totalDays)
+					{
+						dayDifference = totalDays;
+						ViewBag.dateError = $"Cannot forecast weather longer than {totalDays} days, defaulted to day {totalDays}";
+					}
+					if (dayDifference < 0)
+					{
+						dayDifference = 0;
+						ViewBag.dateError = "Cannot forecast weather in the past, defaulted to today";
+					}
+					displayDate = displayDate.AddDays(dayDifference);
+				}
+				<p style="color: red;">@ViewBag.dateError</p>
+
+				string forecastTime = Model.Weather.days[dayDifference].hours[hourTime].datetime;
+				string precipTypes = "No precipitation";
+				string winddir = "";
+				if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 22.5)
+				{
+					winddir = "(From north)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 67.5)
+				{
+					winddir = "(From north-east)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 112.5)
+				{
+					winddir = "(From east)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 157.5)
+				{
+					winddir = "(From south-east)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 202.5)
+				{
+					winddir = "(From south)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 247.5)
+				{
+					winddir = "(From south-west)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 292.5)
+				{
+					winddir = "(From west)";
+				}
+				else if (Model.Weather.days[dayDifference].hours[hourTime].winddir < 337.5)
+				{
+					winddir = "(From north-west)";
+				}
+				else
+				{
+					winddir = "(From north)";
+				}
+
+				if (Model.Weather.days[dayDifference].hours[hourTime].preciptype != null)
+				{
+					precipTypes = string.Join(", ", Model.Weather.days[dayDifference].hours[hourTime].preciptype);
+				}
+
+				<div class="table-responsive">
+					<table class="table" style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px; vertical-align: middle">
+						<tr style="border: 3px solid black">
+							<th colspan="3" style="text-align:center; font-size: 40px;">
+								@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
+							</th>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; padding: 10px; font-size: 40px; padding: 10px; white-space: nowrap">
+								@Model.Weather.days[dayDifference].hours[hourTime].conditions<br />
+								@switch (Model.Weather.days[dayDifference].hours[hourTime].icon)
+								{
+									case "snow":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow.svg">
+										break;
+									case "snow-showers-day":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-day.svg">
+										break;
+									case "snow-showers-night":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/snow-showers-night.svg">
+										break;
+									case "thunder-rain":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-rain.svg">
+										break;
+									case "thunder-showers-day":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-day.svg">
+										break;
+									case "thunder-showers-night":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/thunder-showers-night.svg">
+										break;
+									case "rain":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/rain.svg">
+										break;
+									case "showers-day":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-day.svg">
+										break;
+									case "showers-night":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/showers-night.svg">
+										break;
+									case "fog":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/1st%20Set%20-%20Color/fog.svg">
+										break;
+									case "wind":
+										<img style="width:250px;" src="https://www.svgrepo.com/show/528823/wind.svg">
+										break;
+									case "cloudy":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/cloudy.svg">
+										break;
+									case "partly-cloudy-day":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-day.svg">
+										break;
+									case "partly-cloudy-night":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/partly-cloudy-night.svg">
+										break;
+									case "clear-day":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-day.svg">
+										break;
+									case "clear-night":
+										<img style="width:250px;" src="https://raw.githubusercontent.com/visualcrossing/WeatherIcons/58c79610addf3d4d91471abbb95b05e96fb43019/SVG/3rd%20Set%20-%20Color/clear-night.svg">
+										break;
+									default:
+										<span>Image for: @Model.Weather.days[dayDifference].hours[hourTime].icon does not exist</span>
+										break;
+								}
+							</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; ">@Model.Weather.days[dayDifference].hours[hourTime].temp°@Model.Units.COrF</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Feels like<br />@Model.Weather.days[dayDifference].hours[hourTime].feelslike°@Model.Units.COrF</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px" colspan="3">@Model.Weather.description</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind speed<br />@Model.Weather.days[dayDifference].hours[hourTime].windspeed @Model.Units.KmOrMile/h</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain amount<br />@Model.Weather.days[dayDifference].hours[hourTime].precip @Model.Units.MmOrInches</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Rain chance<br />@Model.Weather.days[dayDifference].hours[hourTime].precipprob %</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Humidity<br />@Model.Weather.days[dayDifference].hours[hourTime].humidity %</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Cloud cover<br />@Model.Weather.days[dayDifference].hours[hourTime].cloudcover %</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Visibility<br />@Model.Weather.days[dayDifference].hours[hourTime].visibility @Model.Units.KmOrMile</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Precipitation types<br />@precipTypes</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Snow amount<br />@Model.Weather.days[dayDifference].hours[hourTime].snow %</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Snow depth<br />@Model.Weather.days[dayDifference].hours[hourTime].snowdepth @Model.Units.MmOrInches</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind gust speed<br />@Model.Weather.days[dayDifference].hours[hourTime].windgust @Model.Units.KmOrMile</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind direction<br />@Model.Weather.days[dayDifference].hours[hourTime].winddir° @winddir</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Sea level pressure<br />@Model.Weather.days[dayDifference].hours[hourTime].pressure hPa</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Solar radiation / hour<br />@Model.Weather.days[dayDifference].hours[hourTime].solarradiation W/@Model.Units.MOrFt<sup>2</sup></td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Sun energy / hour<br />@Model.Weather.days[dayDifference].hours[hourTime].solarenergy MJ/@Model.Units.MOrFt<sup>2</sup></td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Ultraviolet level<br />@Model.Weather.days[dayDifference].hours[hourTime].uvindex (0 - 10)</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Dew point<br />@Model.Weather.days[dayDifference].hours[hourTime].dew°@Model.Units.COrF</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Risk of storms<br />@Model.Weather.days[dayDifference].hours[hourTime].severerisk (0 - 100)</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Timezone<br />@Model.Weather.timezone</td>
+						</tr>
+						<tr style="border: 3px solid black">
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Latitude<br />@Model.Weather.latitude</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Longitude<br />@Model.Weather.longitude</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Query cost<br />@Model.Weather.queryCost (1 - 24)</td>
+						</tr>
+					</table>
+				</div>
+			}
+		}
+    }
+</div>

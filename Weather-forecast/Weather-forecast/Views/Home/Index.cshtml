@@ -82,7 +82,9 @@
 
 				<table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
 					<tr style="border: 3px solid black">
-						<th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)</th>
+						<th colspan="3" style="text-align:center; font-size: 40px;">@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
+                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+                        </th>
 					</tr>
 					<tr style="border: 3px solid black">
 						<td style="text-align: center; padding: 10px; font-size: 40px; padding: 10px; white-space: nowrap">
@@ -191,7 +193,10 @@
                 <div style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 10px; white-space:nowrap">
                     @for (int i = 0; i <= dayDifference; i++)
                     {
-                        displayDate = displayDate.AddDays(1);
+                        if (i != 0)
+                        {
+                            displayDate = displayDate.AddDays(1);
+                        }
                         <table style="border: 3px solid black; width: 400px;">
                             <tr style="border: 3px solid black">
                                 @if (i == 0)
@@ -232,8 +237,15 @@
                                     default:
                                         break;
                                 }
+                                DateTime ButtonForecastDate = currentDate;
+                                ButtonForecastDate = ButtonForecastDate.AddDays(i);
+                                int hourDiff = hourTime - ButtonForecastDate.Hour;
+                                ButtonForecastDate = ButtonForecastDate.AddHours(hourDiff);
                                 <tr>
-                                    <th colspan="2" style="text-align:center; font-size: 40px;">@timeOfDay</th>
+                                    <th colspan="2" style="text-align:center; font-size: 40px;">
+                                        @timeOfDay
+                                        <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@ButtonForecastDate.ToString()')">Details</button>
+                                    </th>
                                 </tr>
                                 <tr style="border-bottom: 3px solid black;">
                                     <td style="text-align: center; padding: 10px; font-size: 40px">
@@ -386,6 +398,32 @@ else
 		<a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
 	</div>
 }
+
+<div id="modal_forecast_details" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Forecast Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="div_forecast_details"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetForecastDetailsPartial(resolvedAddress, metric, forecastDate) {
+       $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, metric: metric, forecastDate: forecastDate}, function(data) {
+          $('#div_forecast_details').html(data)
+          $('#modal_forecast_details').modal('show')
+       });
+    }
+</script>
 
 
 @*

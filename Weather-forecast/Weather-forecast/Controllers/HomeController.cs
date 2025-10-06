@@ -12,6 +12,7 @@ using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
 using Weather_forecast.ViewModels;
+using System.Globalization;
 
 namespace Weather_forecast.Controllers
 {
@@ -132,6 +133,49 @@ namespace Weather_forecast.Controllers
                 result.DisplayMultipleDays = false;
             }
             return View("~/Views/Home/Index.cshtml", result);
+        }
+
+        [HttpGet("Home/GetForecastDetails")]
+        [Authorize]
+        public async Task<IActionResult> GetForecastDetails(string resolvedAddress, bool metric, string forecastDate)
+        {
+            var result = await _weatherAPIHandler.FetchDataAsync(resolvedAddress, metric);
+            if (result == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml");
+            }
+            if (metric)
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "km",
+                    COrF = "C",
+                    MmOrInches = "mm",
+                    MOrFt = "m"
+                };
+            }
+            else
+            {
+                result.Units = new()
+                {
+                    KmOrMile = "miles",
+                    COrF = "F",
+                    MmOrInches = "inches",
+                    MOrFt = "ft"
+                };
+            }
+            result.Metric = metric;
+            try
+            {
+                result.ForecastDate = DateTime.Parse(forecastDate);
+            }
+            catch
+            {
+                result.ForecastDate = null;
+            }
+
+            return PartialView("~/Views/Home/GetForecastDetails.cshtml", result);
         }
 
         [HttpGet("Home/History")]
