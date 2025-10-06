@@ -25,7 +25,7 @@
             <span asp-validation-for="City.CityName" class="text-danger"></span><br />
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
 			<input asp-for="ForecastDate" />
-			<label for="typeCheckbox">Metric</label>
+			<label for="typeCheckbox">Shared link uses Metric system?</label>
 			<input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
             <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">Search specific day</button><br />
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
