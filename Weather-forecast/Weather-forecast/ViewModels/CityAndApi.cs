@@ -15,5 +15,6 @@ namespace Weather_forecast.ViewModels
         public DateTime? ForecastDate { get; set; }
         public int? DayAmount { get; set; }
         public bool DisplayMultipleDays { get; set; }
+        public string? QrCodeBase64 { get; set; }
     }
 }
