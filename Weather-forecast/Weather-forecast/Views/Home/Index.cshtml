@@ -36,7 +36,7 @@
                     <input asp-for="City.CityName" value="@Model.City.CityName" />
                 }
             }
-            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">Get by GPS</button>
+            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">Get my location</button>
             @if (ViewBag.ShowModelError == true)
             {
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
