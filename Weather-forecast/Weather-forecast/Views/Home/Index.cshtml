@@ -21,8 +21,27 @@
         <form asp-action="City" asp-controller="Home" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label asp-for="City.CityName">City name: </label>
-            <input asp-for="City.CityName" />
-            <span asp-validation-for="City.CityName" class="text-danger"></span><br />
+            @if (Model == null)
+            {
+                <input asp-for="City.CityName" />
+            }
+            else
+            {
+                @if (Model.City == null)
+                {
+                    <input asp-for="City.CityName" />
+                }
+                else
+                {
+                    <input asp-for="City.CityName" value="@Model.City.CityName" />
+                }
+            }
+            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">Get by GPS</button>
+            @if (ViewBag.ShowModelError == true)
+            {
+                <span asp-validation-for="City.CityName" class="text-danger"></span>
+            }
+            <br />
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
 			<input asp-for="ForecastDate" />
 			<label for="typeCheckbox">Shared link uses Metric system?</label>
@@ -32,6 +51,7 @@
             <input asp-for="DayAmount" />
             <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">Search multiple days</button>
         </form>
+        ViewBag.ShowModelError = true;
     }
     else if (ViewBag.SharedUrl != null)
     {

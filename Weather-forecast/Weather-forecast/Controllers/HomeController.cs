@@ -1,16 +1,18 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
+using System.Diagnostics;
+using System.Drawing;
+using System.Net;
+using System.Text.Json;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
 using Weather_forecast.ViewModels;
-using System.Globalization;
-using QRCoder;
-using System.Drawing;
-using System.Reflection.Emit;
+using static QRCoder.PayloadGenerator;
 
 namespace Weather_forecast.Controllers
 {
@@ -44,6 +46,24 @@ namespace Weather_forecast.Controllers
         [Authorize]
         public async Task<IActionResult> CityGet(CityAndApi model, string buttonType)
         {
+            if (buttonType == "GPS")
+            {
+                HttpClient _httpClient = new HttpClient();
+                var resIP = await _httpClient.GetAsync("https://api.ipify.org");
+                resIP.EnsureSuccessStatusCode();
+                string ipAddress = await resIP.Content.ReadAsStringAsync();
+
+                var resIPLocation = await _httpClient.GetAsync($"https://geo.ipify.org/api/v2/country,city?apiKey=at_0tVUddlB1XlCDbJBhAskOnQwiIcsr&ipAddress={ipAddress}");
+                resIPLocation.EnsureSuccessStatusCode();
+                string content = await resIPLocation.Content.ReadAsStringAsync();
+                var IpInfo = JsonSerializer.Deserialize<IPifyAPIResponse>(content);
+
+                ViewBag.ShowModelError = false;
+
+                model.City.CityName = "Tallinn";
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            ViewBag.ShowModelError = true;
             var uid = _userManager.GetUserId(User);
             if (uid == null)
             {
