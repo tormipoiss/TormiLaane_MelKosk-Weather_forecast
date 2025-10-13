@@ -46,6 +46,23 @@ namespace Weather_forecast.Controllers
         [Authorize]
         public async Task<IActionResult> CityGet(CityAndApi model, string buttonType)
         {
+            var uid = _userManager.GetUserId(User);
+            if (uid == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList.Count > 0)
+            {
+                ViewData["showHistory"] = "true";
+            }
             if (buttonType == "GPS")
             {
                 HttpClient _httpClient = new HttpClient();
@@ -64,23 +81,6 @@ namespace Weather_forecast.Controllers
                 return View("~/Views/Home/Index.cshtml", model);
             }
             ViewBag.ShowModelError = true;
-            var uid = _userManager.GetUserId(User);
-            if (uid == null)
-            {
-                ViewBag.error = true;
-                return View("~/Views/Home/Index.cshtml", model);
-            }
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                ViewBag.error = true;
-                return View("~/Views/Home/Index.cshtml", model);
-            }
-            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            if (testHistoryCityList.Count > 0)
-            {
-                ViewData["showHistory"] = "true";
-            }
             ViewBag.error = false;
             if (!ModelState.IsValid)
             {

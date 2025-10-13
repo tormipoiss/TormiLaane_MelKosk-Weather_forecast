@@ -14,7 +14,10 @@
         @if (ViewData["showHistory"] == "true")
         {
             <form asp-action="History" asp-controller="Home" method="get">
-                <button type="submit" style="width:150px; height:30px;">Get Search History</button>
+                <button type="submit">
+                    Get Search History
+                    <img src="https://www.svgrepo.com/show/521702/history.svg" style="width: 20px; margin-top: -4px;" />
+                </button>
             </form>
         }
         <p>Search for a city to see its current weather:</p>
@@ -36,7 +39,10 @@
                     <input asp-for="City.CityName" value="@Model.City.CityName" />
                 }
             }
-            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">Get my location</button>
+            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">
+                Get my location
+                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
+            </button>
             @if (ViewBag.ShowModelError == true)
             {
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
@@ -46,10 +52,16 @@
 			<input asp-for="ForecastDate" />
 			<label for="typeCheckbox">Shared link uses Metric system?</label>
 			<input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
-            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">Search specific day</button><br />
+            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">
+                Search specific day
+                <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: -4px;" />
+            </button><br />
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
             <input asp-for="DayAmount" />
-            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">Search multiple days</button>
+            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">
+                Search multiple days
+                <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px; margin-top: -4px;" />
+            </button>
         </form>
         ViewBag.ShowModelError = true;
     }
@@ -334,11 +346,20 @@
             }
             @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
             {
-                <button onclick="showModal()">Share this forecast!</button>
+                <button onclick="showModal()">
+                    Share this forecast!
+                    <img src="https://www.svgrepo.com/show/451571/emblem-shared.svg" style="width: 14px; margin-top:-2px;" />
+                </button>
             }
             <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                <button onclick="showGoogleMap()">Show google map</button>
-                <button onclick="showLightingMap()">Show lighting map</button>
+                <button onclick="showGoogleMap()">
+                    Show google map
+                    <img src="https://www.svgrepo.com/show/532548/map-pin-alt.svg" style="width: 19px; margin-top:-2px;" />
+                </button>
+                <button onclick="showLightingMap()">
+                    Show lighting map
+                    <img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
+                </button>
             </div>
             <iframe id="googlemap" width="800" height="550" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
             <iframe id="lightingmap" src=@Model.LightingEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>

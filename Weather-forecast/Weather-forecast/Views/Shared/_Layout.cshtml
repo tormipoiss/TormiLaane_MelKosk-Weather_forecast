@@ -14,7 +14,9 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Weather_forecast</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Weather_forecast
+                    <img src="https://www.svgrepo.com/show/483341/home.svg" style="width: 30px; margin-top: -5px;" />
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -34,17 +36,26 @@
                     {
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Statistics">Shared link statistics</a>
+                                <a class="nav-link text-dark" style="margin-bottom: -1px;" asp-area="" asp-controller="Home" asp-action="Statistics">
+                                    Shared link statistics
+                                    <img src="https://www.svgrepo.com/show/451571/emblem-shared.svg" style="width: 19px; margin-top:-2px;"/>
+                                </a>
                             </li>
                         </ul>
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="AccountSettings">Account settings</a>
+                                <a class="nav-link text-dark" style="margin-bottom: -1px;" asp-area="" asp-controller="DdosMap" asp-action="Index">
+                                    Digital Weather
+                                    <img src="https://www.svgrepo.com/show/535491/map.svg" style="width: 21px; margin-top:-2px;" />
+                                </a>
                             </li>
                         </ul>
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="DdosMap" asp-action="Index">Digital Weather</a>
+                                <a class="nav-link text-dark" style="margin-bottom: -3px;" asp-area="" asp-controller="Account" asp-action="AccountSettings">
+                                    Account settings
+                                    <img src="https://www.svgrepo.com/show/503147/account-settings.svg" style="width: 30px;" />
+                                </a>
                             </li>
                         </ul>
                         <ul class="navbar-nav ml-auto nav-item">
