@@ -21,6 +21,32 @@ body {
   margin-bottom: 60px;
 }
 
-.rounded_corners {
-    border-radius: 25px;
+.form-grid {
+    display: grid;
+    grid-template-columns: 150px 1fr 180px;
+    gap: 10px 15px;
+    align-items: center;
+    max-width: 800px;
+    margin: 20px auto;
 }
+
+    .form-grid label {
+        font-weight: bold;
+    }
+
+    .form-grid input {
+        padding: 6px;
+        width: 100%;
+    }
+
+    .form-grid button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 35px;
+    }
+
+    .form-grid .text-danger {
+        grid-column: 1 / -1;
+    }
+
