@@ -39,7 +39,7 @@
                     <input asp-for="City.CityName" value="@Model.City.CityName" />
                 }
             }
-            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">
+            <button class="cancel btn btn-secondary btn-sm" type="submit" value="GPS" name="buttonType" style="height:35px;">
                 Get my location
                 <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
             </button>
@@ -49,16 +49,14 @@
             }
             <br />
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
-			<input asp-for="ForecastDate" />
-			<label for="typeCheckbox">Shared link uses Metric system?</label>
-			<input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
-            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">
+			<input asp-for="ForecastDate" class="rounded"/>
+            <button type="submit" value="SpecificDay" name="buttonType" style="height:35px;" class="btn btn-secondary btn-sm">
                 Search specific day
                 <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: -4px;" />
             </button><br />
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
-            <input asp-for="DayAmount" />
-            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">
+            <input asp-for="DayAmount" class="rounded" />
+            <button type="submit" value="MultipleDays" name="buttonType" style="height:35px;" class="btn btn-secondary btn-sm">
                 Search multiple days
                 <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px; margin-top: -4px;" />
             </button>
@@ -389,15 +387,28 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<a>@ViewBag.ShareLink</a>
+					<a id="modalShareLink">@ViewBag.ShareLink</a>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="copyToClipboard()">Copy to clipboard!</button>
 				</div>
 				<div class="modal-footer">
+                    <label for="typeCheckbox">Use metric system?</label>
+                    <input type="checkbox" checked="@ViewBag.Metric" onchange="changeSharedLinkSystem()" />
 				</div>
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
+        function changeSharedLinkSystem(){
+            var modalUrl = document.getElementById("modalShareLink")
+            if(modalUrl.innerHTML.includes("metric=True")){
+                modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=True","metric=False")
+            }
+            else{
+                modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=False","metric=True")
+
+            }
+            console.log(modalUrl.innerHTML)
+        }
 		function showModal(){
 		fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
 		method: 'POST'
@@ -414,7 +425,7 @@
 
 		@*https://masteringjs.io/tutorials/fundamentals/copy-to-clipboard*@
 		function copyToClipboard() {
-		const element = document.querySelector('#shareLink');
+		const element = document.querySelector('#modalShareLink');
 		navigator.clipboard.writeText(element.innerText).then(function() {
 		console.log('Async: Copying to clipboard was successful!');
 		}, function(err) {
