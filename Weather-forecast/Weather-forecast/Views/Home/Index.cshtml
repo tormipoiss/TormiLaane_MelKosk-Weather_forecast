@@ -112,7 +112,7 @@
 					<tr style="border: 3px solid black">
 						<th colspan="3" style="text-align:center; font-size: 40px;">
 							@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
-							<button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+							<button class="btn btn-secondary btn-sm" onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
 						</th>
 					</tr>
 					<tr style="border: 3px solid black">
@@ -342,17 +342,17 @@
 			}
 			@if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
 			{
-				<button onclick="showModal()">
+				<button onclick="showModal()" class="btn btn-secondary btn-sm">
 					Share this forecast!
 					<img src="https://www.svgrepo.com/show/451571/emblem-shared.svg" style="width: 14px; margin-top:-2px;" />
 				</button>
 			}
 			<div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
-				<button onclick="showGoogleMap()">
+				<button onclick="showGoogleMap()" class="btn btn-secondary btn-sm">
 					Show google map
 					<img src="https://www.svgrepo.com/show/532548/map-pin-alt.svg" style="width: 19px; margin-top:-2px;" />
 				</button>
-				<button onclick="showLightingMap()">
+				<button onclick="showLightingMap()" class="btn btn-secondary btn-sm">
 					Show lighting map
 					<img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
 				</button>
@@ -405,7 +405,6 @@
 				modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=False","metric=True")
 
 			}
-			console.log(modalUrl.innerHTML)
 		}
 		function showModal(){
 		fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
