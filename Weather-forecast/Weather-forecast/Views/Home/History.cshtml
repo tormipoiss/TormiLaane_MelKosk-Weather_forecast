@@ -22,12 +22,12 @@
             @foreach (City city in Model.Cities)
             {
                 string historyCity = numeration.ToString();
-                historyCity += $". City name: {city.CityName}, date of search: {city.DateOfSearch}";
+                historyCity += $". Location: {city.CityName}, date of search: {city.DateOfSearch}";
                 Model.City = city;
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; margin-top: 6px; text-align: center; justify-content:center">
                     <span>@historyCity</span> 
                     <form asp-action="City" asp-controller="Home" method="post">
-                        <button style="height:30px" type="submit">Search weather for this city</button>
+                        <button style="height:30px" type="submit">Search weather for this location</button>
                         <input asp-for="City.CityName" style="display:none" />
                     </form>
                 </div>

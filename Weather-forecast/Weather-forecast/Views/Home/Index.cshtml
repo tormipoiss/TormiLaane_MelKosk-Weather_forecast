@@ -20,33 +20,37 @@
                 </button>
             </form>
         }
-        <p>Search for a city to see its current weather:</p>
+        <p>Search for a location to see its current weather:</p>
         <form asp-action="City" asp-controller="Home" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <label asp-for="City.CityName">City name: </label>
+            <label asp-for="City.CityName">Location: </label>
             @if (Model == null)
             {
-                <input asp-for="City.CityName" />
+                <input asp-for="City.CityName" id="cityNameInput" />
             }
             else
             {
                 @if (Model.City == null)
                 {
-                    <input asp-for="City.CityName" />
+                    <input asp-for="City.CityName" id="cityNameInput" />
                 }
                 else
                 {
-                    <input asp-for="City.CityName" value="@Model.City.CityName" />
+                    <input asp-for="City.CityName" value="@Model.City.CityName" id="cityNameInput" />
                 }
             }
-            <button class="cancel" type="submit" value="GPS" name="buttonType" style="height:30px;">
-                Get my location
-                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
-            </button>
             @if (ViewBag.ShowModelError == true)
             {
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
             }
+            <button type="submit" value="GPS" name="buttonType" style="height:30px;">
+                Get my location
+                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
+            </button>
+            <button type="button" onClick="return GetLocationOnMap()">
+                Choose location on map
+                <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width: 22px; margin-top: -3px;" />
+            </button>
             <br />
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
 			<input asp-for="ForecastDate" />
@@ -116,7 +120,7 @@
                     <tr style="border: 3px solid black">
                         <th colspan="3" style="text-align:center; font-size: 40px;">
                             @Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
-                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.ForecastDate.ToString()')">Forecast Details</button>
                         </th>
                     </tr>
                     <tr style="border: 3px solid black">
@@ -470,11 +474,35 @@ else
     </div>
 </div>
 
+<div id="modal_map" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose location on map</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="div_map"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    function GetForecastDetailsPartial(resolvedAddress, metric, forecastDate) {
-       $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, metric: metric, forecastDate: forecastDate}, function(data) {
+    function GetForecastDetailsPartial(resolvedAddress, forecastDate) {
+       $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, forecastDate: forecastDate}, function(data) {
           $('#div_forecast_details').html(data)
           $('#modal_forecast_details').modal('show')
+       });
+    }
+
+    function GetLocationOnMap() {
+       $.get('@Url.Action("GetLocationOnMap", "Home")', function(data) {
+          $('#div_map').html(data)
+          $('#modal_map').modal('show')
        });
     }
 </script>

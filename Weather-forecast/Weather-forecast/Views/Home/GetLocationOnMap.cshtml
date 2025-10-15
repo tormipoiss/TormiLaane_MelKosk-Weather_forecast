@@ -1,0 +1,102 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
+@* @model Weather_forecast.ViewModels.CityAndApi *@
+
+<div class="text-center">
+    @if (signInManager.IsSignedIn(User))
+    {
+        <!-- Display Google Map -->
+        <div id="map" style="height: 650px; width: 100%;"></div>
+
+        <!-- Button to submit selected location -->
+        <button id="submitLocation" style="margin-top: 10px;">Submit Location</button>
+        <span id="noAddress" style="display:none; color:red">Could not get address for chosen location</span>
+        <span id="apiError" style="display:none; color:red">Error with connecting to Google API</span>
+
+        <script>
+            function initMap() {
+                const modalmap = document.getElementById("modal_map");
+                const elements = document.getElementsByClassName("modal-backdrop");
+                modalmap.style.display = "block";
+                for (let item of elements) {
+                    item.style.display = "block";
+                }
+
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 59.4337274, lng: 24.7440969 },
+                    zoom: 8
+                });
+
+                var marker;
+
+                // Add click event listener to get selected location
+                map.addListener('click', function (e) {
+                    var latitude = e.latLng.lat();
+                    var longitude = e.latLng.lng();
+
+                    // Clear previous marker
+                    if (marker) {
+                        marker.setMap(null);
+                    }
+
+                    // Display marker on selected location
+                    marker = new google.maps.Marker({
+                        position: { lat: latitude, lng: longitude },
+                        map: map
+                    });
+                });
+
+                // Event listener for submit button
+                document.getElementById('submitLocation').addEventListener('click', function () {
+                    // Check if marker is defined
+                    if (marker) {
+                        // Get selected location data and submit to server
+                        var latitude = marker.getPosition().lat();
+                        var longitude = marker.getPosition().lng();
+
+                        const cityNameInput = document.getElementById("cityNameInput");
+
+                        // Define the API URL
+                        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&result_type=plus_code&key=AIzaSyDliyTa5oUDgZLRy02EmCYXfhWCnm7WSTs`;
+                        const noAddress = document.getElementById("noAddress");
+                        const apiError = document.getElementById("apiError");
+
+                        // Make a GET request
+                        fetch(apiUrl)
+                          .then(response => {
+                            if (!response.ok) {
+                              throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                          })
+                          .then(data => {
+                            if (data.plus_code.compound_code !== undefined) {
+                                const compound_code = data.plus_code.compound_code.toString();
+                                noAddress.style.display = "none";
+                                apiError.style.display = "none";
+                                for (let item of elements) {
+                                    item.style.display = "none";
+                                }
+                                modalmap.style.display = "none";
+                                cityNameInput.value = compound_code.substring(9);
+                            }
+                            else {
+                                noAddress.style.display = "inline";
+                            }
+                          })
+                          .catch(error => {
+                              console.log(error)
+                              apiError.style.display = "inline";
+                          });
+                        
+                    } else {
+                        alert("Please select a location on the map.");
+                    }
+                });
+            }
+        </script>
+
+        <!-- Load Google Maps API -->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDliyTa5oUDgZLRy02EmCYXfhWCnm7WSTs&callback=initMap" async defer></script>
+    }
+</div>

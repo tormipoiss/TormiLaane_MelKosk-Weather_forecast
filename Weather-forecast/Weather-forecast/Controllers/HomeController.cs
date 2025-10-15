@@ -216,6 +216,13 @@ namespace Weather_forecast.Controllers
             return PartialView("~/Views/Home/GetForecastDetails.cshtml", result);
         }
 
+        [HttpGet("Home/GetLocationOnMap")]
+        [Authorize]
+        public IActionResult GetLocationOnMap()
+        {
+            return PartialView("~/Views/Home/GetLocationOnMap.cshtml");
+        }
+
         [HttpGet("Home/History")]
         [Authorize]
         public async Task<IActionResult> History()
