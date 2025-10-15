@@ -22,16 +22,6 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-
-                        @if (signInManager.IsSignedIn(User))
-                        {
-                            // history thing here
-                        }
-                        @*                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
-                    </ul>
                     @if (signInManager.IsSignedIn(User))
                     {
                         <ul class="navbar-nav flex-grow-1">
@@ -50,16 +40,14 @@
                                 </a>
                             </li>
                         </ul>
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" style="margin-bottom: -3px;" asp-area="" asp-controller="Account" asp-action="AccountSettings">
-                                    Account settings
-                                    <img src="https://www.svgrepo.com/show/503147/account-settings.svg" style="width: 30px;" />
-                                </a>
-                            </li>
-                        </ul>
                         <ul class="navbar-nav ml-auto nav-item">
                             <span>Hi, @User.Identity.Name |</span>
+                        </ul>
+                        <ul class="navbar-nav ml-auto nav-item">
+                            <a class="nav-link text-dark" style="margin-bottom: -3px;" asp-area="" asp-controller="Account" asp-action="AccountSettings">
+                                Account settings
+                                <img src="https://www.svgrepo.com/show/503147/account-settings.svg" style="width: 30px;" />
+                            </a>
                         </ul>
                         <ul class="navbar-nav ml-auto nav-item">
                             <form method="post" asp-controller="Account" asp-action="Logout">
