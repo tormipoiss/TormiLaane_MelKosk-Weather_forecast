@@ -11,28 +11,47 @@
     <div class="text-center">
         <h1 class="display-4">Search history</h1>
         <form asp-action="Index" asp-controller="Home" method="get" style="display: inline-block; margin-right: 8px">
-            <button type="submit" style="width:150px; height:30px;" class="btn btn-secondary btn-sm">
+            <button type="submit" style="width:150px; height:30px; margin-bottom:30px;" class="btn btn-secondary btn-sm">
                 Go back
                 <img src="https://www.svgrepo.com/show/458545/back.svg" style="width: 19px; margin-top:-2px;" />
             </button>
         </form>
         @if (Model != null)
         {
-            int numeration = 1;
-            @foreach (City city in Model.Cities)
-            {
-                string historyCity = numeration.ToString();
-                historyCity += $". City name: {city.CityName}, date of search: {city.DateOfSearch}";
-                Model.City = city;
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; margin-top: 6px; text-align: center; justify-content:center">
-                    <span>@historyCity</span> 
-                    <form asp-action="City" asp-controller="Home" method="post">
-                        <button style="height:30px" type="submit">Search weather for this city</button>
-                        <input asp-for="City.CityName" style="display:none" />
-                    </form>
-                </div>
-                numeration++;
-            }
+            <div style="display: flex; justify-content: center;">
+                <table class="table table-striped table-bordered" style="width: auto; margin: 0 auto;">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="min-width: 300px; text-align: left;">Place and Date</th>
+                            <th style="width: 200px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int numeration = 1; }
+                        @foreach (var city in Model.Cities)
+                        {
+                            <tr>
+                                <td style="text-align: center;">@numeration</td>
+                                <td style="text-align: left; word-wrap: break-word;">
+                                    <strong>Place:</strong> @city.CityName<br/>
+                                    <strong>Date of search:</strong> @city.DateOfSearch
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    @{ Model.City = city; }
+                                    <form asp-action="City" asp-controller="Home" method="post">
+                                        <button style="height:30px; width: 100%;" type="submit" class="btn btn-secondary btn-sm">
+                                            Search weather for this place
+                                        </button>
+                                        <input asp-for="City.CityName" style="display:none" />
+                                    </form>
+                                </td>
+                            </tr>
+                            numeration++;
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 }

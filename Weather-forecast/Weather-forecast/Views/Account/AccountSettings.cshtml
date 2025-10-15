@@ -1,5 +1,8 @@
 ﻿@model Weather_forecast.ViewModels.AccountSettings
+@{
+    ViewData["Title"] = "Account Settings";
+}
 <form asp-action="SettingsChanged" asp-controller="Account" method="post">
     <label for="typeCheckbox">Enable metric system on all searches</label>
-    <input id="typeCheckbox" asp-for="GlobalMetric" type="checkbox" checked="@Model.GlobalMetric" onChange="this.form.submit()" />
+    <input class="form-check-input" id="typeCheckbox" asp-for="GlobalMetric" type="checkbox" checked="@Model.GlobalMetric" onChange="this.form.submit()" />
 </form>

@@ -1,8 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
 @model Weather_forecast.ViewModels.CityAndApi
-@{
-	ViewData["Title"] = "Home Page";
+@if (signInManager.IsSignedIn(User))
+{
+	ViewData["Title"] = "Home";
+}
+else
+{
+	ViewData["Title"] = "Shared Link";
 }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 
@@ -25,7 +30,7 @@
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-			<label asp-for="City.CityName">City name: </label>
+			<label asp-for="City.CityName">Place name: </label>
 			@if (Model?.City?.CityName == null)
 			{
 				<input asp-for="City.CityName" />
@@ -112,7 +117,10 @@
 					<tr style="border: 3px solid black">
 						<th colspan="3" style="text-align:center; font-size: 40px;">
 							@Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
-							<button class="btn btn-secondary btn-sm" onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+							@if (signInManager.IsSignedIn(User))
+							{
+								<button class="btn btn-secondary btn-sm" onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+							}
 						</th>
 					</tr>
 					<tr style="border: 3px solid black">
@@ -389,7 +397,7 @@
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="copyToClipboard()">Copy to clipboard!</button>
 				</div>
 				<div class="modal-footer">
-					<label for="typeCheckbox">Use metric system?</label>
+					<label for="typeCheckbox">Use metric system when sharing?</label>
 					<input type="checkbox" checked="@ViewBag.Metric" onchange="changeSharedLinkSystem()" />
 				</div>
 			</div>
