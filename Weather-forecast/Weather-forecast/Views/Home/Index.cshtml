@@ -19,14 +19,14 @@ else
         @if (ViewData["showHistory"] == "true")
         {
             <form asp-action="History" asp-controller="Home" method="get">
-                <button type="submit">
+                <button type="submit" class="btn btn-secondary btn-sm">
                     Get Search History
                     <img src="https://www.svgrepo.com/show/521702/history.svg" style="width: 20px; margin-top: -4px;" />
                 </button>
             </form>
         }
         <p>Search for a location to see its current weather:</p>
-        <form asp-action="City" asp-controller="Home" method="post">
+        <form asp-action="City" asp-controller="Home" method="post" class="form-grid">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label asp-for="City.CityName">Location: </label>
             @if (Model == null)
@@ -44,30 +44,28 @@ else
                     <input asp-for="City.CityName" value="@Model.City.CityName" id="cityNameInput" />
                 }
             }
+            <button type="submit" value="GPS" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
+                Get my location
+                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
+            </button>
+            <button type="button" onClick="return GetLocationOnMap()" class="btn btn-secondary btn-sm">
+                Choose location on map
+                <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width: 22px; margin-top: -3px;" />
+            </button>
             @if (ViewBag.ShowModelError == true)
             {
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
             }
-            <button type="submit" value="GPS" name="buttonType" style="height:30px;">
-                Get my location
-                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
-            </button>
-            <button type="button" onClick="return GetLocationOnMap()">
-                Choose location on map
-                <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width: 22px; margin-top: -3px;" />
-            </button>
-            <br />
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
-			<input asp-for="ForecastDate" />
-			<label for="typeCheckbox">Shared link uses Metric system?</label>
-			<input id="typeCheckbox" asp-for="Metric" type="checkbox" checked="@ViewBag.Metric" />
-            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;">
+            <input asp-for="ForecastDate" class="rounded"/>
+            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
                 Search specific day
                 <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: -4px;" />
-            </button><br />
+            </button>
+            
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
-            <input asp-for="DayAmount" />
-            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;">
+            <input asp-for="DayAmount" class="rounded" />
+            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
                 Search multiple days
                 <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px; margin-top: -4px;" />
             </button>
@@ -119,6 +117,7 @@ else
                 }
                 <p style="color: red;">@ViewBag.dateError</p>
 
+                string forecastTime = Model.Weather.days[dayDifference].hours[hourTime].datetime;
 
                 <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
                     <tr style="border: 3px solid black">
@@ -474,20 +473,20 @@ else
 }
 
 <div id="modal_forecast_details" class="modal fade" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Forecast Details</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div id="div_forecast_details"></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Forecast Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="div_forecast_details"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="modal_map" class="modal fade" tabindex="-1" role="dialog">
