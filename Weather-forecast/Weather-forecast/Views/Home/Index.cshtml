@@ -25,7 +25,7 @@ else
                         <img src="https://www.svgrepo.com/show/521702/history.svg" style="width:20px; margin-top:-4px;" />
                     </button>
                 </form>
-                <button type="button" onclick="return getlocationonmap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <button type="button" onclick="return GetLocationOnMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
                     <span>Choose location on map</span>
                     <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width:22px; margin-top:-3px;" />
                 </button>
@@ -62,14 +62,14 @@ else
             <input asp-for="ForecastDate" class="rounded"/>
             <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
                 <span>Search specific day</span>
-                <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: -4px;" />
+                <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: 2px;" />
             </button>
             
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
             <input asp-for="DayAmount" class="rounded" />
             <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
                 <span>Search multiple days</span>
-                <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px; margin-top: -4px;" />
+                <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px" />
             </button>
         </form>
         ViewBag.ShowModelError = true;
