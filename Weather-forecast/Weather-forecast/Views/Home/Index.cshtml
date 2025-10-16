@@ -18,12 +18,18 @@ else
         <h1 class="display-4">Welcome to the weather forecast app</h1>
         @if (ViewData["showHistory"] == "true")
         {
-            <form asp-action="History" asp-controller="Home" method="get">
-                <button type="submit" class="btn btn-secondary btn-sm">
-                    Get Search History
-                    <img src="https://www.svgrepo.com/show/521702/history.svg" style="width: 20px; margin-top: -4px;" />
+            <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:nowrap; width:100%;">
+                <form asp-action="History" asp-controller="Home" method="get">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                        <span>Get Search History</span>
+                        <img src="https://www.svgrepo.com/show/521702/history.svg" style="width:20px; margin-top:-4px;" />
+                    </button>
+                </form>
+                <button type="button" onclick="return getlocationonmap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                    <span>Choose location on map</span>
+                    <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width:22px; margin-top:-3px;" />
                 </button>
-            </form>
+            </div>
         }
         <p>Search for a location to see its current weather:</p>
         <form asp-action="City" asp-controller="Home" method="post" class="form-grid">
@@ -44,13 +50,9 @@ else
                     <input asp-for="City.CityName" value="@Model.City.CityName" id="cityNameInput" />
                 }
             }
-            <button type="submit" value="GPS" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
-                Get my location
-                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -4px;" />
-            </button>
-            <button type="button" onClick="return GetLocationOnMap()" class="btn btn-secondary btn-sm">
-                Choose location on map
-                <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width: 22px; margin-top: -3px;" />
+            <button type="submit" value="GPS" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <span>Get my location</span>
+                <img src="https://www.svgrepo.com/show/522166/location.svg" style="width: 20px; margin-top: -1px;" />
             </button>
             @if (ViewBag.ShowModelError == true)
             {
@@ -58,15 +60,15 @@ else
             }
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
             <input asp-for="ForecastDate" class="rounded"/>
-            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
-                Search specific day
+            <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <span>Search specific day</span>
                 <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: -4px;" />
             </button>
             
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
             <input asp-for="DayAmount" class="rounded" />
-            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;" class="btn btn-secondary btn-sm">
-                Search multiple days
+            <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <span>Search multiple days</span>
                 <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px; margin-top: -4px;" />
             </button>
         </form>

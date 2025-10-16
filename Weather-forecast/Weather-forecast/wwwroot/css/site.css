@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -23,7 +23,7 @@ body {
 
 .form-grid {
     display: grid;
-    grid-template-columns: 150px 1fr 180px;
+    grid-template-columns: 150px 1fr 187px;
     gap: 10px 15px;
     align-items: center;
     max-width: 800px;
@@ -50,3 +50,12 @@ body {
         grid-column: 1 / -1;
     }
 
+
+
+.whitehover:hover img {
+    filter: invert(100%) sepia(0%) saturate(7499%) hue-rotate(325deg) brightness(96%) contrast(96%);
+}
+
+.whitehover:hover span {
+    color:white;
+}
