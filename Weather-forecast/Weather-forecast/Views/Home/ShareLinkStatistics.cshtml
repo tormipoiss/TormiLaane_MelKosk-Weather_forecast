@@ -1,4 +1,7 @@
 ﻿@model Weather_forecast.ViewModels.LinkShares
+@{
+    ViewData["Title"] = "Statistics";
+}
 <div class="text-center">
     <h5 class="display-6">Your shared link statistics</h5>
     @foreach(CityShare share in Model.Shares)

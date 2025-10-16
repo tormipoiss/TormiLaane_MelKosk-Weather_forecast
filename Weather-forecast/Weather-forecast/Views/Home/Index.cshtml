@@ -1,8 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Weather_forecast.Models.ApplicationUser> signInManager
 @model Weather_forecast.ViewModels.CityAndApi
-@{
-    ViewData["Title"] = "Home Page";
+@if (signInManager.IsSignedIn(User))
+{
+	ViewData["Title"] = "Home";
+}
+else
+{
+	ViewData["Title"] = "Shared Link";
 }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 
@@ -114,7 +119,6 @@
                 }
                 <p style="color: red;">@ViewBag.dateError</p>
 
-                string forecastTime = Model.Weather.days[dayDifference].hours[hourTime].datetime;
 
                 <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
                     <tr style="border: 3px solid black">
@@ -393,15 +397,27 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<a>@ViewBag.ShareLink</a>
+					<a id="modalShareLink">@ViewBag.ShareLink</a>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="copyToClipboard()">Copy to clipboard!</button>
 				</div>
 				<div class="modal-footer">
+					<label for="typeCheckbox">Use metric system when sharing?</label>
+					<input type="checkbox" checked="@ViewBag.Metric" onchange="changeSharedLinkSystem()" />
 				</div>
 			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
+		function changeSharedLinkSystem(){
+			var modalUrl = document.getElementById("modalShareLink")
+			if(modalUrl.innerHTML.includes("metric=True")){
+				modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=True","metric=False")
+			}
+			else{
+				modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=False","metric=True")
+
+			}
+		}
 		function showModal(){
 		fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
 		method: 'POST'
@@ -409,16 +425,16 @@
 		$(document).ready(function() {
 		$("#exampleModal").modal("show");
 		});
-        var qr = document.getElementById("qr")
-        if(qr !== undefined){
-            qr.hidden = false;
-        }
+		var qr = document.getElementById("qr")
+		if(qr !== undefined){
+			qr.hidden = false;
+		}
 		}
 
 
 		@*https://masteringjs.io/tutorials/fundamentals/copy-to-clipboard*@
 		function copyToClipboard() {
-		const element = document.querySelector('#shareLink');
+		const element = document.querySelector('#modalShareLink');
 		navigator.clipboard.writeText(element.innerText).then(function() {
 		console.log('Async: Copying to clipboard was successful!');
 		}, function(err) {
@@ -458,20 +474,20 @@ else
 }
 
 <div id="modal_forecast_details" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Forecast Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="div_forecast_details"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Forecast Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div id="div_forecast_details"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div id="modal_map" class="modal fade" tabindex="-1" role="dialog">
@@ -492,19 +508,18 @@ else
 </div>
 
 <script>
-    function GetForecastDetailsPartial(resolvedAddress, forecastDate) {
-       $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, forecastDate: forecastDate}, function(data) {
-          $('#div_forecast_details').html(data)
-          $('#modal_forecast_details').modal('show')
-       });
-    }
-
     function GetLocationOnMap() {
        $.get('@Url.Action("GetLocationOnMap", "Home")', function(data) {
           $('#div_map').html(data)
           $('#modal_map').modal('show')
        });
     }
+	function GetForecastDetailsPartial(resolvedAddress, metric, forecastDate) {
+	   $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, metric: metric, forecastDate: forecastDate}, function(data) {
+		  $('#div_forecast_details').html(data)
+		  $('#modal_forecast_details').modal('show')
+	   });
+	}
 </script>
 
 
