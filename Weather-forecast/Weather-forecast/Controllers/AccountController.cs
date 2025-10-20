@@ -66,7 +66,7 @@ namespace Weather_forecast.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByNameAsync(model.Username);
                 if (user == null)
                 {
                     ViewBag.ErrorTile = "Invalid login";
@@ -80,7 +80,7 @@ namespace Weather_forecast.Controllers
                     ViewBag.ErrorMessage = "Username or password is incorrect";
                     return View("Error");
                 }
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
                     var uid = _userManager.GetUserId(User);

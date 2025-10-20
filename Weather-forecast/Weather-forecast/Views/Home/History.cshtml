@@ -11,9 +11,9 @@
     <div class="text-center">
         <h1 class="display-4">Search history</h1>
         <form asp-action="Index" asp-controller="Home" method="get" style="display: inline-block; margin-right: 8px">
-            <button type="submit" style="width:150px; height:30px; margin-bottom:30px;" class="btn btn-secondary btn-sm">
-                Go back
-                <img src="https://www.svgrepo.com/show/458545/back.svg" style="width: 19px; margin-top:-2px;" />
+            <button type="submit" style="width:150px; height:30px; margin-bottom:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <span>Go back</span>
+                <img src="https://www.svgrepo.com/show/238203/backward.svg" style="width: 19px; margin-top:-2px;" />
             </button>
         </form>
         @if (Model != null)
@@ -40,8 +40,8 @@
                                 <td style="text-align: center; vertical-align: middle;">
                                     @{ Model.City = city; }
                                     <form asp-action="City" asp-controller="Home" method="post">
-                                        <button style="height:30px; width: 100%;" type="submit" class="btn btn-secondary btn-sm">
-                                            Search weather for this location
+                                        <button style="height:30px; width: 100%;" type="submit" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                                            <span>Search location weather</span>
                                         </button>
                                         <input asp-for="City.CityName" style="display:none" />
                                     </form>

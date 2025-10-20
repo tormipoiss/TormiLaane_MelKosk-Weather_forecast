@@ -16,21 +16,21 @@ else
     @if (signInManager.IsSignedIn(User))
     {
         <h1 class="display-4">Welcome to the weather forecast app</h1>
-        @if (ViewData["showHistory"] == "true")
-        {
-            <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:nowrap; width:100%;">
+        <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:nowrap; width:100%;">
+            @if (ViewData["showHistory"] == "true")
+            {
                 <form asp-action="History" asp-controller="Home" method="get">
                     <button type="submit" class="btn btn-outline-secondary btn-sm whitehover text-black">
                         <span>Get Search History</span>
                         <img src="https://www.svgrepo.com/show/521702/history.svg" style="width:20px; margin-top:-4px;" />
                     </button>
                 </form>
-                <button type="button" onclick="return GetLocationOnMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
-                    <span>Choose location on map</span>
-                    <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width:22px; margin-top:-3px;" />
-                </button>
-            </div>
-        }
+            }
+            <button type="button" onclick="return GetLocationOnMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <span>Choose location on map</span>
+                <img src="https://www.svgrepo.com/show/532550/map-location-pin.svg" style="width:22px; margin-top:-3px;" />
+            </button>
+        </div>
         <p>Search for a location to see its current weather:</p>
         <form asp-action="City" asp-controller="Home" method="post" class="form-grid">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -59,14 +59,14 @@ else
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
             }
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
-            <input asp-for="ForecastDate" class="rounded"/>
+            <input asp-for="ForecastDate" />
             <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
                 <span>Search specific day</span>
                 <img src="https://www.svgrepo.com/show/522234/plus.svg" style="width: 14px; margin-top: 2px;" />
             </button>
             
             <label asp-for="DayAmount" style="margin-top: 9px">Day(s) amount: </label>
-            <input asp-for="DayAmount" class="rounded" />
+            <input asp-for="DayAmount" />
             <button type="submit" value="MultipleDays" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">
                 <span>Search multiple days</span>
                 <img src="https://www.svgrepo.com/show/370953/add-multiple.svg" style="width: 35px" />
@@ -78,9 +78,8 @@ else
     {
         <div>
             <h4>Want to see the forecast without relying on other people to share it to you?</h4>
-            <a class="text-dark h4" asp-area="" asp-controller="Account" asp-action="Register"> Register </a>
-            |
-            <a class="text-dark h4" asp-controller="Account" asp-action="Login"> Login </a>
+            <a class="btn btn-primary" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+            <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Login</a>
         </div>
     }
     @if (Model != null)
@@ -125,7 +124,7 @@ else
                     <tr style="border: 3px solid black">
                         <th colspan="3" style="text-align:center; font-size: 40px;">
                             @Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
-                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.ForecastDate.ToString()')">Forecast Details</button>
+                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.ForecastDate.ToString()')" class="btn btn-outline-secondary whitehover text-black" style="font-size: 20px; margin-top: -10px;"><span>Forecast Details</span></button>
                         </th>
                     </tr>
                     <tr style="border: 3px solid black">
@@ -286,7 +285,7 @@ else
                                 <tr>
                                     <th colspan="2" style="text-align:center; font-size: 40px;">
                                         @timeOfDay
-                                        <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.Metric', '@ButtonForecastDate.ToString()')">Details</button>
+                                        <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@ButtonForecastDate.ToString()')" class="btn btn-outline-secondary whitehover text-black" style="font-size: 20px; margin-top: -10px;"><span>Details</span></button>
                                     </th>
                                 </tr>
                                 <tr style="border-bottom: 3px solid black;">
@@ -355,18 +354,18 @@ else
             }
             @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
             {
-                <button onclick="showModal()">
-                    Share this forecast!
-                    <img src="https://www.svgrepo.com/show/451571/emblem-shared.svg" style="width: 14px; margin-top:-2px;" />
+                <button onclick="showModal()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="margin-top: 7px;">
+                    <span>Share this forecast!</span>
+                    <img src="https://www.svgrepo.com/show/535620/share-nodes.svg" style="width: 14px; margin-top:-2px;" />
                 </button>
             }
             <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                <button onclick="showGoogleMap()">
-                    Show google map
+                <button onclick="showGoogleMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                    <span>Show google map</span>
                     <img src="https://www.svgrepo.com/show/532548/map-pin-alt.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
-                <button onclick="showLightingMap()">
-                    Show lighting map
+                <button onclick="showLightingMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                    <span>Show lighting map</span>
                     <img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
             </div>
@@ -469,8 +468,8 @@ else
 {
 	<div class="text-center">
 		<h1 class="display-6">Please make an account or login to see the forecast</h1>
-		<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
-		<a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+        <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-primary">Register</a>
 	</div>
 }
 
@@ -485,7 +484,7 @@ else
                 <div id="div_forecast_details"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary whitehover text-black" style="font-size: 15px" data-bs-dismiss="modal"><span>Close</span></button>
             </div>
         </div>
     </div>
@@ -502,7 +501,7 @@ else
                 <div id="div_map"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary whitehover text-black" style="font-size: 15px" data-bs-dismiss="modal"><span>Close</span></button>
             </div>
         </div>
     </div>
@@ -515,8 +514,8 @@ else
           $('#modal_map').modal('show')
        });
     }
-	function GetForecastDetailsPartial(resolvedAddress, metric, forecastDate) {
-	   $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, metric: metric, forecastDate: forecastDate}, function(data) {
+	function GetForecastDetailsPartial(resolvedAddress, forecastDate) {
+	   $.get('@Url.Action("GetForecastDetails", "Home")', { resolvedAddress: resolvedAddress, forecastDate: forecastDate}, function(data) {
 		  $('#div_forecast_details').html(data)
 		  $('#modal_forecast_details').modal('show')
 	   });

@@ -79,6 +79,12 @@
 				{
 					winddir = "(From north)";
 				}
+				double? snowWithZero = 0;
+				double? snowDepth = Model.Weather.days[dayDifference].hours[hourTime].snowdepth;
+				if (snowDepth != null)
+				{
+					snowWithZero = snowDepth;
+				}
 
 				if (Model.Weather.days[dayDifference].hours[hourTime].preciptype != null)
 				{
@@ -169,7 +175,7 @@
 						<tr style="border: 3px solid black">
 							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Precipitation types<br />@precipTypes</td>
 							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Snow amount<br />@Model.Weather.days[dayDifference].hours[hourTime].snow %</td>
-							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Snow depth<br />@Model.Weather.days[dayDifference].hours[hourTime].snowdepth @Model.Units.MmOrInches</td>
+							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Snow depth<br />@snowWithZero @Model.Units.MmOrInches</td>
 						</tr>
 						<tr style="border: 3px solid black">
 							<td style="text-align: center; font-size: 40px; padding: 10px; white-space: nowrap">Wind gust speed<br />@Model.Weather.days[dayDifference].hours[hourTime].windgust @Model.Units.KmOrMile</td>

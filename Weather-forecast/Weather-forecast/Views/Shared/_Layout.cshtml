@@ -24,7 +24,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     @if (signInManager.IsSignedIn(User))
                     {
-                        <ul class="navbar-nav flex-grow-1">
+                        <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link text-dark" style="margin-bottom: -1px;" asp-area="" asp-controller="Home" asp-action="Statistics">
                                     Shared link statistics
@@ -32,7 +32,7 @@
                                 </a>
                             </li>
                         </ul>
-                        <ul class="navbar-nav flex-grow-1">
+                        <ul class="navbar-nav" style="margin-right: auto">
                             <li class="nav-item">
                                 <a class="nav-link text-dark" style="margin-bottom: -1px;" asp-area="" asp-controller="DdosMap" asp-action="Index">
                                     Digital Weather
@@ -40,16 +40,16 @@
                                 </a>
                             </li>
                         </ul>
-                        <ul class="navbar-nav ml-auto nav-item">
+                        <ul class="navbar-nav">
                             <span>Hi, @User.Identity.Name |</span>
                         </ul>
-                        <ul class="navbar-nav ml-auto nav-item">
+                        <ul class="navbar-nav">
                             <a class="nav-link text-dark" style="margin-bottom: -3px;" asp-area="" asp-controller="Account" asp-action="AccountSettings">
                                 Account settings
                                 <img src="https://www.svgrepo.com/show/503147/account-settings.svg" style="width: 30px;" />
                             </a>
                         </ul>
-                        <ul class="navbar-nav ml-auto nav-item">
+                        <ul class="navbar-nav">
                             <form method="post" asp-controller="Account" asp-action="Logout">
                                 <button type="submit" class="nav-link btn btn-link py-0" style="width: auto; padding-top: 0.8rem;">
                                     Logout
@@ -59,18 +59,17 @@
                     }
                     else
                     {
-                        <ul class="navbar-nav ml-auto">
+                        <ul class="navbar-nav" style="margin-left: auto">
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         </ul>
-                        <ul class="navbar-nav ml-auto">
+                        <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
                         </ul>
                     }
-
                 </div>
             </div>
         </nav>
