@@ -368,9 +368,14 @@ else
                     <span>Show lighting map</span>
                     <img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
+                <button onclick="showWeatherMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                    <span>Show weather map</span>
+                    <img src="https://www.svgrepo.com/show/479339/weather-9.svg" style="width: 19px; margin-top:-2px;" />
+                </button>
             </div>
-            <iframe id="googlemap" width="800" height="550" id="gmap_canvas" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
+            <iframe id="googlemap" width="800" height="550" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
             <iframe id="lightingmap" src=@Model.LightingEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>
+            <iframe id="weathermap" src=@Model.WeatherEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden loading="lazy"></iframe>
             @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
             {
                 <img id="qr" alt="Embedded QR Code" width="750" src="data:image/png;base64,@Model.QrCodeBase64" hidden />
@@ -441,14 +446,21 @@ else
 		console.error('Async: Could not copy text: ', err);
 		});
 		}
-		function showGoogleMap(){
-		document.getElementById("lightingmap").hidden = true
-		document.getElementById("googlemap").hidden = false
-		}
-		function showLightingMap(){
-		document.getElementById("googlemap").hidden = true
-		document.getElementById("lightingmap").hidden = false
-		}
+        function showGoogleMap(){
+        document.getElementById("lightingmap").hidden = true
+        document.getElementById("weathermap").hidden = true
+        document.getElementById("googlemap").hidden = false
+        }
+        function showLightingMap(){
+        document.getElementById("googlemap").hidden = true
+        document.getElementById("weathermap").hidden = true
+        document.getElementById("lightingmap").hidden = false
+        }
+        function showWeatherMap(){
+        document.getElementById("lightingmap").hidden = true
+        document.getElementById("googlemap").hidden = true
+        document.getElementById("weathermap").hidden = false
+        }
 	</script>
 }
 else if (ViewBag.SharedUrl != null)
@@ -456,12 +468,19 @@ else if (ViewBag.SharedUrl != null)
 	<script type="text/javascript">
 		function showGoogleMap(){
 		document.getElementById("lightingmap").hidden = true
+        document.getElementById("weathermap").hidden = true
 		document.getElementById("googlemap").hidden = false
 		}
 		function showLightingMap(){
 		document.getElementById("googlemap").hidden = true
+        document.getElementById("weathermap").hidden = true
 		document.getElementById("lightingmap").hidden = false
 		}
+        function showWeatherMap(){
+        document.getElementById("lightingmap").hidden = true
+        document.getElementById("googlemap").hidden = true
+        document.getElementById("weathermap").hidden = false
+        }
 	</script>
 }
 else
