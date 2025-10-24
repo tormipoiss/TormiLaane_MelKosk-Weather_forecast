@@ -358,17 +358,21 @@ else
                     <span>Share this forecast!</span>
                     <img src="https://www.svgrepo.com/show/535620/share-nodes.svg" style="width: 14px; margin-top:-2px;" />
                 </button>
+                <button onclick="showMeteogram()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="margin-top: 7px;">
+                    <span id="weatherGraphSpan">Show weather graph</span>
+                    <img src="https://www.svgrepo.com/show/509125/graph.svg" style="width: 19px; margin-top:-2px;" />
+                </button>
             }
             <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                <button onclick="showGoogleMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <button onclick="showGoogleMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
                     <span>Show google map</span>
                     <img src="https://www.svgrepo.com/show/532548/map-pin-alt.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
-                <button onclick="showLightingMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <button onclick="showLightingMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
                     <span>Show lighting map</span>
                     <img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
-                <button onclick="showWeatherMap()" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                <button onclick="showWeatherMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
                     <span>Show weather map</span>
                     <img src="https://www.svgrepo.com/show/479339/weather-9.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
@@ -376,6 +380,8 @@ else
             <iframe id="googlemap" width="800" height="550" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
             <iframe id="lightingmap" src=@Model.LightingEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>
             <iframe id="weathermap" src=@Model.WeatherEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden loading="lazy"></iframe>
+            <span hidden id="meteogramFiller" style="margin-bottom: -83px; display:block; background-color: white; font-size: 23px; font-weight: 600; padding-top: 40px; margin-top: -30px">Weather graph for: </span>
+            <img style="z-index: -2; position: relative" id="meteogram" src=@Model.MeteogramEmbedUrl width="800" frameBorder="0" marginheight="0" marginwidth="0" hidden />
             @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
             {
                 <img id="qr" alt="Embedded QR Code" width="750" src="data:image/png;base64,@Model.QrCodeBase64" hidden />
@@ -461,6 +467,21 @@ else
         document.getElementById("googlemap").hidden = true
         document.getElementById("weathermap").hidden = false
         }
+        function showMeteogram(){
+            if (document.getElementById("meteogram").hidden === true) {
+                const forecastLocation = document.getElementById("cityNameInput").value;
+                document.getElementById("meteogram").hidden = false
+                const meteogramFiller = document.getElementById("meteogramFiller");
+                meteogramFiller.hidden = false;
+                meteogramFiller.textContent = `Weather graph for: ${forecastLocation}`;
+                document.getElementById("weatherGraphSpan").textContent = "Hide weather graph"
+            }
+            else {
+                document.getElementById("meteogram").hidden = true
+                document.getElementById("meteogramFiller").hidden = true;
+                document.getElementById("weatherGraphSpan").textContent = "Show weather graph"
+            }
+        }
 	</script>
 }
 else if (ViewBag.SharedUrl != null)
@@ -480,6 +501,21 @@ else if (ViewBag.SharedUrl != null)
         document.getElementById("lightingmap").hidden = true
         document.getElementById("googlemap").hidden = true
         document.getElementById("weathermap").hidden = false
+        }
+        function showMeteogram(){
+            if (document.getElementById("meteogram").hidden === true) {
+                const forecastLocation = document.getElementById("cityNameInput").value;
+                document.getElementById("meteogram").hidden = false
+                const meteogramFiller = document.getElementById("meteogramFiller");
+                meteogramFiller.hidden = false;
+                meteogramFiller.textContent = `Weather graph for: ${forecastLocation}`;
+                document.getElementById("weatherGraphSpan").textContent = "Hide weather graph"
+            }
+            else {
+                document.getElementById("meteogram").hidden = true
+                document.getElementById("meteogramFiller").hidden = true;
+                document.getElementById("weatherGraphSpan").textContent = "Show weather graph"
+            }
         }
 	</script>
 }

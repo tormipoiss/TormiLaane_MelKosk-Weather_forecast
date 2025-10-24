@@ -12,6 +12,7 @@ namespace Weather_forecast.ViewModels
         public string EmbedUrl { get; set; }
         public string LightingEmbedUrl { get; set; }
         public string WeatherEmbedUrl { get; set; }
+        public string MeteogramEmbedUrl { get; set; }
         public bool Metric { get; set; } = true;
         public DateTime? ForecastDate { get; set; }
         public int? DayAmount { get; set; }
