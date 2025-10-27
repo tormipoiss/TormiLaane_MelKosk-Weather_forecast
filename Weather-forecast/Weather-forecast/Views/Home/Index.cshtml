@@ -123,8 +123,13 @@ else
                 <table style="border: 3px solid black; margin-left: auto; margin-right: auto; max-width: 500px; width: fit-content; margin-top: 10px">
                     <tr style="border: 3px solid black">
                         <th colspan="3" style="text-align:center; font-size: 40px;">
-                            @Model.Weather.resolvedAddress (@displayDate.ToString().Substring(0, 10) @forecastTime)
-                            <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.ForecastDate.ToString()')" class="btn btn-outline-secondary whitehover text-black" style="font-size: 20px; margin-top: -10px;"><span>Forecast Details</span></button>
+                            <span id="weatherAddress">@Model.Weather.resolvedAddress</span> (@displayDate.ToString().Substring(0, 10) @forecastTime)
+                            @if (signInManager.IsSignedIn(User) && ViewBag.SharedUrl == null)
+                            {
+                                <button onClick="return GetForecastDetailsPartial('@Model.Weather.resolvedAddress', '@Model.ForecastDate.ToString()')" class="btn btn-outline-secondary whitehover text-black" style="font-size: 20px; margin-top: -10px;">
+                                    <span>Forecast Details</span>
+                                </button>
+                            }
                         </th>
                     </tr>
                     <tr style="border: 3px solid black">
@@ -358,11 +363,11 @@ else
                     <span>Share this forecast!</span>
                     <img src="https://www.svgrepo.com/show/535620/share-nodes.svg" style="width: 14px; margin-top:-2px;" />
                 </button>
-                <button onclick="showMeteogram()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="margin-top: 7px;">
-                    <span id="weatherGraphSpan">Show weather graph</span>
-                    <img src="https://www.svgrepo.com/show/509125/graph.svg" style="width: 19px; margin-top:-2px;" />
-                </button>
             }
+            <button onclick="showMeteogram()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="margin-top: 7px;">
+                <span id="weatherGraphSpan">Show weather graph</span>
+                <img src="https://www.svgrepo.com/show/509125/graph.svg" style="width: 19px; margin-top:-2px;" />
+            </button>
             <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
                 <button onclick="showGoogleMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
                     <span id="googlemapSpan">Show google map</span>
@@ -564,7 +569,7 @@ else if (ViewBag.SharedUrl != null)
         }
         function showMeteogram(){
             if (document.getElementById("meteogram").hidden === true) {
-                const forecastLocation = document.getElementById("cityNameInput").value;
+                const forecastLocation = document.getElementById("weatherAddress").textContent;
                 document.getElementById("meteogram").hidden = false
                 const meteogramFiller = document.getElementById("meteogramFiller");
                 meteogramFiller.hidden = false;
