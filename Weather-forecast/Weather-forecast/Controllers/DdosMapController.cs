@@ -10,7 +10,7 @@ namespace Weather_forecast.Controllers
         {
             return View();
         }
-        public IActionResult CheckPointThreatMap()
+        public IActionResult Radware()
         {
             return View();
         }
