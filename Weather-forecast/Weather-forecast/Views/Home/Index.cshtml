@@ -365,20 +365,20 @@ else
             }
             <div class="text-center" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
                 <button onclick="showGoogleMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
-                    <span>Show google map</span>
+                    <span id="googlemapSpan">Show google map</span>
                     <img src="https://www.svgrepo.com/show/532548/map-pin-alt.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
-                <button onclick="showLightingMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
-                    <span>Show lighting map</span>
+                <button onclick="showLightningMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
+                    <span id="lightningmapSpan">Show lightning map</span>
                     <img src="https://www.svgrepo.com/show/489497/lightning-1.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
                 <button onclick="showWeatherMap()" class="btn btn-outline-secondary btn-sm whitehover text-black" style="z-index: 2; position: relative">
-                    <span>Show weather map</span>
+                    <span id="weathermapSpan">Show weather map</span>
                     <img src="https://www.svgrepo.com/show/479339/weather-9.svg" style="width: 19px; margin-top:-2px;" />
                 </button>
             </div>
             <iframe id="googlemap" width="800" height="550" src=@Model.EmbedUrl frameborder="0" scrolling="no" marginheight="0" marginwidth="0" hidden></iframe>
-            <iframe id="lightingmap" src=@Model.LightingEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>
+            <iframe id="lightningmap" src=@Model.LightningEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden></iframe>
             <iframe id="weathermap" src=@Model.WeatherEmbedUrl width="800" height="550" frameBorder="0" marginheight="0" marginwidth="0" hidden loading="lazy"></iframe>
             <span hidden id="meteogramFiller" style="margin-bottom: -83px; display:block; background-color: white; font-size: 23px; font-weight: 600; padding-top: 40px; margin-top: -30px">Weather graph for: </span>
             <img style="z-index: -2; position: relative" id="meteogram" src=@Model.MeteogramEmbedUrl width="800" frameBorder="0" marginheight="0" marginwidth="0" hidden />
@@ -453,19 +453,49 @@ else
 		});
 		}
         function showGoogleMap(){
-        document.getElementById("lightingmap").hidden = true
-        document.getElementById("weathermap").hidden = true
-        document.getElementById("googlemap").hidden = false
+            const googlemap = document.getElementById("googlemap");
+            if (googlemap.hidden === true) {
+                googlemap.hidden = false
+                document.getElementById("lightningmap").hidden = true
+                document.getElementById("weathermap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Hide google map"
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
+            else {
+                googlemap.hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+            }
         }
-        function showLightingMap(){
-        document.getElementById("googlemap").hidden = true
-        document.getElementById("weathermap").hidden = true
-        document.getElementById("lightingmap").hidden = false
+        function showLightningMap(){
+            const lightningmap = document.getElementById("lightningmap");
+            if (lightningmap.hidden === true) {
+                lightningmap.hidden = false
+                document.getElementById("googlemap").hidden = true
+                document.getElementById("weathermap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+                document.getElementById("lightningmapSpan").textContent = "Hide lightning map"
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
+            else {
+                lightningmap.hidden = true
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+            }
         }
         function showWeatherMap(){
-        document.getElementById("lightingmap").hidden = true
-        document.getElementById("googlemap").hidden = true
-        document.getElementById("weathermap").hidden = false
+            const weathermap = document.getElementById("weathermap");
+            if (weathermap.hidden === true) {
+                weathermap.hidden = false
+                document.getElementById("googlemap").hidden = true
+                document.getElementById("lightningmap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+                document.getElementById("weathermapSpan").textContent = "Hide weather map"
+            }
+            else {
+                weathermap.hidden = true
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
         }
         function showMeteogram(){
             if (document.getElementById("meteogram").hidden === true) {
@@ -488,19 +518,49 @@ else if (ViewBag.SharedUrl != null)
 {
 	<script type="text/javascript">
 		function showGoogleMap(){
-		document.getElementById("lightingmap").hidden = true
-        document.getElementById("weathermap").hidden = true
-		document.getElementById("googlemap").hidden = false
+            const googlemap = document.getElementById("googlemap");
+            if (googlemap.hidden === true) {
+                googlemap.hidden = false
+                document.getElementById("lightningmap").hidden = true
+                document.getElementById("weathermap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Hide google map"
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
+            else {
+                googlemap.hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+            }
 		}
-		function showLightingMap(){
-		document.getElementById("googlemap").hidden = true
-        document.getElementById("weathermap").hidden = true
-		document.getElementById("lightingmap").hidden = false
+		function showLightningMap(){
+            const lightningmap = document.getElementById("lightningmap");
+            if (lightningmap.hidden === true) {
+                lightningmap.hidden = false
+                document.getElementById("googlemap").hidden = true
+                document.getElementById("weathermap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+                document.getElementById("lightningmapSpan").textContent = "Hide lightning map"
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
+            else {
+                lightningmap.hidden = true
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+            }
 		}
         function showWeatherMap(){
-        document.getElementById("lightingmap").hidden = true
-        document.getElementById("googlemap").hidden = true
-        document.getElementById("weathermap").hidden = false
+            const weathermap = document.getElementById("weathermap");
+            if (weathermap.hidden === true) {
+                weathermap.hidden = false
+                document.getElementById("googlemap").hidden = true
+                document.getElementById("lightningmap").hidden = true
+                document.getElementById("googlemapSpan").textContent = "Show google map"
+                document.getElementById("lightningmapSpan").textContent = "Show lightning map"
+                document.getElementById("weathermapSpan").textContent = "Hide weather map"
+            }
+            else {
+                weathermap.hidden = true
+                document.getElementById("weathermapSpan").textContent = "Show weather map"
+            }
         }
         function showMeteogram(){
             if (document.getElementById("meteogram").hidden === true) {

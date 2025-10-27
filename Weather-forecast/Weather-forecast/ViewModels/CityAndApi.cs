@@ -10,7 +10,7 @@ namespace Weather_forecast.ViewModels
         public List<City> Cities { get; set; }
         public Units Units { get; set; }
         public string EmbedUrl { get; set; }
-        public string LightingEmbedUrl { get; set; }
+        public string LightningEmbedUrl { get; set; }
         public string WeatherEmbedUrl { get; set; }
         public string MeteogramEmbedUrl { get; set; }
         public bool Metric { get; set; } = true;
