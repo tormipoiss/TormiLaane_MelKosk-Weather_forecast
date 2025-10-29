@@ -117,23 +117,53 @@ namespace Weather_forecast.Controllers
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
+            var alreadyShared = await _context.Shares.Where(u => u.UserId == uid).FirstOrDefaultAsync(x => x.City == model.City.CityName);
+            if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
+            {
+                result.DisplayMultipleDays = true;
+                cityToHistory.isMultipleDayForecast = true;
+                cityToHistory.DayAmount = model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount;
+                result.DayAmount = model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount;
+                ViewBag.DisplayMultipleDays = "true";
+                ViewBag.DayAmount = model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount;
+            }
+            else
+            {
+                cityToHistory.isMultipleDayForecast = false;
+                result.DisplayMultipleDays = false;
+                ViewBag.DisplayMultipleDays = "false";
+                ViewBag.DayAmount = null;
+            }
             //ApplicationUser? usr = await _userManager.GetUserAsync(User);
-            var alreadyShared = await _context.Shares.Where(u=>u.UserId==uid).FirstOrDefaultAsync(x=>x.City==model.City.CityName);
+            
             if (alreadyShared != null)
             {
-                ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
+                {
+                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}&displayMultipleDays=true&dayAmount={(model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount)}";
+                }
+                else
+                {
+                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                }
                 ViewBag.ShareToken = alreadyShared.ShareToken;
             }
             else
             {
                 string shareToken = Guid.NewGuid().ToString();
-                ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
+                {
+                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}&displayMultipleDays=true&dayAmount={(model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount)}";
+                }
+                else
+                {
+                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
+                }
                 ViewBag.ShareToken = shareToken;
             }
             ViewBag.City = model.City.CityName;
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
-            //ViewBag.Metric = model.Metric;
             ViewBag.ForecastDate = model.ForecastDate;
             var qrGen = new QRCodeGenerator();
             var imgType = Base64QRCode.ImageType.Png;
@@ -155,15 +185,7 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            if (buttonType == "MultipleDays")
-            {
-                result.DisplayMultipleDays = true;
-                result.DayAmount = model.DayAmount;
-            }
-            else
-            {
-                result.DisplayMultipleDays = false;
-            }
+            
             return View("~/Views/Home/Index.cshtml", result);
         }
 
@@ -282,7 +304,7 @@ namespace Weather_forecast.Controllers
 
         [HttpGet("Home/Shared")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate)
+        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate, bool? displayMultipleDays, int? DayAmount)
         {
             if (city == null)
             {
@@ -332,13 +354,22 @@ namespace Weather_forecast.Controllers
                     MmOrInches = "inches"
                 };
             }
-            if(foreCastDate == null)
+            if (foreCastDate == null)
             {
                 result.ForecastDate = DateTime.Now;
             }
             else
             {
                 result.ForecastDate = DateTime.Parse(foreCastDate);
+            }
+            if (displayMultipleDays == true)
+            {
+                result.DisplayMultipleDays = true;
+                result.DayAmount = DayAmount;
+            }
+            else
+            {
+                result.DisplayMultipleDays = false;
             }
             var qrGen = new QRCodeGenerator();
             var imgType = Base64QRCode.ImageType.Png;
@@ -350,7 +381,7 @@ namespace Weather_forecast.Controllers
         }
         [HttpPost("Home/ShareLink")]
         [Authorize]
-        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid,bool metric)
+        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid, bool metric, bool? displayMultipleDays, int? DayAmount)
         {
             var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
             if (exists != null)
@@ -368,7 +399,14 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(),Metric=metric});
+            if (displayMultipleDays == true)
+            {
+                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, isMultipleDayForecast = true, DayAmount = DayAmount });
+            }
+            else
+            {
+                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric });
+            }
             await _context.SaveChangesAsync();
             //var existingUserByName = await _userManager.FindByNameAsync(User.Identity.Name);
             return Ok();

@@ -8,10 +8,18 @@
     {
         <div>
             <p>@share.City has been viewed @share.ViewCount times!
-                <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric" class="btn btn-outline-secondary btn-sm whitehover text-black">
-                    <span>Click here to view the shared link!</span>
-                </a>
-
+                @if (share.isMultipleDayForecast)
+                {
+                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric&displayMultipleDays=true&dayAmount=@share.DayAmount" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                        <span>Click here to view the shared link!</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                        <span>Click here to view the shared link!</span>
+                    </a>
+                }
                 <a asp-controller="Home" asp-action="DeleteSharedLink" asp-route-shareToken="@share.ShareToken" class="btn btn-danger btn-sm">
                     Delete this shared link
                 </a>

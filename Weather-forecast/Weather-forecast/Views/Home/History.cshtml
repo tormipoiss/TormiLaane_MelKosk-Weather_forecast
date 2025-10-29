@@ -34,16 +34,25 @@
                             <tr>
                                 <td style="text-align: center;">@numeration</td>
                                 <td style="text-align: left; word-wrap: break-word;">
-                                    <strong>Location:</strong> @city.CityName<br/>
+                                    <strong>Location:</strong> @city.CityName
+                                    @if (city.isMultipleDayForecast)
+                                    {
+                                        <span>/ Multiple day (@city.DayAmount)</span>
+                                    }
+                                    <br/>
                                     <strong>Date of search:</strong> @city.DateOfSearch
                                 </td>
                                 <td style="text-align: center; vertical-align: middle;">
-                                    @{ Model.City = city; }
+                                    @{ 
+                                        Model.City = city;
+                                    }
                                     <form asp-action="City" asp-controller="Home" method="post">
                                         <button style="height:30px; width: 100%;" type="submit" class="btn btn-outline-secondary btn-sm whitehover text-black">
                                             <span>Search location weather</span>
                                         </button>
                                         <input asp-for="City.CityName" style="display:none" />
+                                        <input asp-for="City.isMultipleDayForecast" style="display:none" />
+                                        <input asp-for="City.DayAmount" style="display:none" />
                                     </form>
                                 </td>
                             </tr>

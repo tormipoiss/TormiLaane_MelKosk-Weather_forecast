@@ -9,6 +9,8 @@ namespace Weather_forecast.Models
         public string UserId { get; set; }
         public string City { get; set; }
         public bool Metric { get; set; }
+        public bool isMultipleDayForecast { get; set; }
+        public int? DayAmount { get; set; }
         public int ViewCount { get; set; }
     }
 }

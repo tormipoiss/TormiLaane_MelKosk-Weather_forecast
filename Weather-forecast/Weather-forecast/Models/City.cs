@@ -10,6 +10,8 @@ namespace Weather_forecast.Models
         [Required]
         [DisplayName("city name")]
         public string CityName { get; set; }
+        public bool isMultipleDayForecast { get; set; }
+        public int? DayAmount { get; set; }
         public DateTime DateOfSearch { get; set; }
         public string HistoryUserId { get; set; }
     }

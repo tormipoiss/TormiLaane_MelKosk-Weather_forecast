@@ -234,7 +234,7 @@ else
                     }
                     Model.DayAmount = dayDifference;
                 }
-                <h1>@Model.Weather.resolvedAddress</h1>
+                <h1 id="multipleDayAddress">@Model.Weather.resolvedAddress</h1>
                 <p style="color: red;">@ViewBag.dateError</p>
                 <div style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 10px; white-space:nowrap">
                     @for (int i = 0; i <= dayDifference; i++)
@@ -433,18 +433,28 @@ else
 				modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=False","metric=True")
 
 			}
-		}
-		function showModal(){
-		fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
-		method: 'POST'
-		})
-		$(document).ready(function() {
-		$("#exampleModal").modal("show");
-		});
-		var qr = document.getElementById("qr")
-		if(qr !== undefined){
-			qr.hidden = false;
-		}
+ 		}
+		function showModal() {
+            if ('@ViewBag.DisplayMultipleDays' == "true") {
+                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric&displayMultipleDays=true&dayAmount=@ViewBag.DayAmount`, {
+                method: 'POST'
+                })
+                $(document).ready(function() {
+                $("#exampleModal").modal("show");
+                });
+            }
+            else {
+                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
+                method: 'POST'
+                })
+                $(document).ready(function() {
+                $("#exampleModal").modal("show");
+                });
+            }
+		    var qr = document.getElementById("qr")
+		    if(qr !== undefined){
+			    qr.hidden = false;
+		    }
 		}
 
 
@@ -504,7 +514,12 @@ else
         }
         function showMeteogram(){
             if (document.getElementById("meteogram").hidden === true) {
-                const forecastLocation = document.getElementById("cityNameInput").value;
+                let forecastLocation = "";
+                try {
+                    forecastLocation = document.getElementById("weatherAddress").textContent;
+                } catch (error) {
+                    forecastLocation = document.getElementById("multipleDayAddress").textContent;
+                }
                 document.getElementById("meteogram").hidden = false
                 const meteogramFiller = document.getElementById("meteogramFiller");
                 meteogramFiller.hidden = false;
@@ -569,7 +584,12 @@ else if (ViewBag.SharedUrl != null)
         }
         function showMeteogram(){
             if (document.getElementById("meteogram").hidden === true) {
-                const forecastLocation = document.getElementById("weatherAddress").textContent;
+                let forecastLocation = "";
+                try {
+                    forecastLocation = document.getElementById("weatherAddress").textContent;
+                } catch (error) {
+                    forecastLocation = document.getElementById("multipleDayAddress").textContent;
+                }
                 document.getElementById("meteogram").hidden = false
                 const meteogramFiller = document.getElementById("meteogramFiller");
                 meteogramFiller.hidden = false;
