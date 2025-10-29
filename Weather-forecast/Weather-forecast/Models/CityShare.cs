@@ -11,6 +11,7 @@ namespace Weather_forecast.Models
         public bool Metric { get; set; }
         public bool isMultipleDayForecast { get; set; }
         public int? DayAmount { get; set; }
+        public DateTime? forecastDate { get; set; }
         public int ViewCount { get; set; }
     }
 }

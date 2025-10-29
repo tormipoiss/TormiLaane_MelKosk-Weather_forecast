@@ -431,12 +431,11 @@ else
 			}
 			else{
 				modalUrl.innerHTML = modalUrl.innerHTML.replace("metric=False","metric=True")
-
 			}
  		}
 		function showModal() {
             if ('@ViewBag.DisplayMultipleDays' == "true") {
-                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric&displayMultipleDays=true&dayAmount=@ViewBag.DayAmount`, {
+                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric&foreCastDate=@ViewBag.ForecastDate&displayMultipleDays=true&dayAmount=@ViewBag.DayAmount`, {
                 method: 'POST'
                 })
                 $(document).ready(function() {
@@ -444,7 +443,7 @@ else
                 });
             }
             else {
-                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric`, {
+                fetch(`/Home/ShareLink?city=${encodeURIComponent(document.getElementById("city").innerText)}&uid=@ViewBag.Uid&shareToken=@ViewBag.ShareToken&metric=@ViewBag.Metric&foreCastDate=@ViewBag.ForecastDate`, {
                 method: 'POST'
                 })
                 $(document).ready(function() {

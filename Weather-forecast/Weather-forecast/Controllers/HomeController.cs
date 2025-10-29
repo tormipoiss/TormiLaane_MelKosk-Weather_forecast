@@ -160,7 +160,7 @@ namespace Weather_forecast.Controllers
             ViewBag.City = model.City.CityName;
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
-            ViewBag.ForecastDate = model.ForecastDate;
+            ViewBag.ForecastDate = model.ForecastDate != null ? model.ForecastDate : model.City.ForecastDate != null ? model.City.ForecastDate : DateTime.Now;
             var qrGen = new QRCodeGenerator();
             var imgType = Base64QRCode.ImageType.Png;
             QRCodeData qrCodeData = qrGen.CreateQrCode(ViewBag.ShareLink, QRCodeGenerator.ECCLevel.Q);
@@ -383,7 +383,7 @@ namespace Weather_forecast.Controllers
         }
         [HttpPost("Home/ShareLink")]
         [Authorize]
-        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid, bool metric, bool? displayMultipleDays, int? DayAmount)
+        public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate, bool? displayMultipleDays, int? DayAmount)
         {
             var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
             if (exists != null)
@@ -401,13 +401,22 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            if (displayMultipleDays == true)
+            DateTime? forecastDateFixed = new DateTime();
+            if (foreCastDate == null)
             {
-                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, isMultipleDayForecast = true, DayAmount = DayAmount });
+                forecastDateFixed = null;
             }
             else
             {
-                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric });
+                forecastDateFixed = DateTime.Parse(foreCastDate);
+            }
+            if (displayMultipleDays == true)
+            {
+                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed, isMultipleDayForecast = true, DayAmount = DayAmount });
+            }
+            else
+            {
+                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed });
             }
             await _context.SaveChangesAsync();
             //var existingUserByName = await _userManager.FindByNameAsync(User.Identity.Name);
