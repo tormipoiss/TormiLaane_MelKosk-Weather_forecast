@@ -13,6 +13,7 @@ namespace Weather_forecast.Models
         public bool isMultipleDayForecast { get; set; }
         public int? DayAmount { get; set; }
         public DateTime DateOfSearch { get; set; }
+        public DateTime? ForecastDate { get; set; }
         public string HistoryUserId { get; set; }
     }
 }

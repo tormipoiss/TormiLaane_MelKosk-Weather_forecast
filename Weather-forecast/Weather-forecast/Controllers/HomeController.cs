@@ -58,11 +58,6 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
-            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            if (testHistoryCityList.Count > 0)
-            {
-                ViewData["showHistory"] = "true";
-            }
             if (buttonType == "GPS")
             {
                 HttpClient _httpClient = new HttpClient();
@@ -112,11 +107,12 @@ namespace Weather_forecast.Controllers
                 };
             }
             result.Metric = model.Metric;
-            result.ForecastDate = model.ForecastDate != null ? model.ForecastDate : DateTime.Now;
+            result.ForecastDate = model.ForecastDate != null ? model.ForecastDate : model.City.ForecastDate != null ? model.City.ForecastDate : DateTime.Now;
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
+            cityToHistory.ForecastDate = model.ForecastDate;
             var alreadyShared = await _context.Shares.Where(u => u.UserId == uid).FirstOrDefaultAsync(x => x.City == model.City.CityName);
             if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
             {
@@ -185,7 +181,13 @@ namespace Weather_forecast.Controllers
             oldHistory.Cities.Add(cityToHistory);
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
-            
+
+            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList.Count > 0)
+            {
+                ViewData["showHistory"] = "true";
+            }
+
             return View("~/Views/Home/Index.cshtml", result);
         }
 

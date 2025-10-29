@@ -39,6 +39,13 @@
                                     {
                                         <span>/ Multiple day (@city.DayAmount)</span>
                                     }
+                                    else
+                                    {
+                                        @if (city.ForecastDate != null)
+                                        {
+                                            <span>/ @city.ForecastDate</span>
+                                        }
+                                    }
                                     <br/>
                                     <strong>Date of search:</strong> @city.DateOfSearch
                                 </td>
@@ -53,6 +60,7 @@
                                         <input asp-for="City.CityName" style="display:none" />
                                         <input asp-for="City.isMultipleDayForecast" style="display:none" />
                                         <input asp-for="City.DayAmount" style="display:none" />
+                                        <input asp-for="City.ForecastDate" style="display:none" />
                                     </form>
                                 </td>
                             </tr>
