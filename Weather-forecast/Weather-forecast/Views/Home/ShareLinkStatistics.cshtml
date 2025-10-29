@@ -4,36 +4,70 @@
 }
 <div class="text-center">
     <h5 class="display-6">Your shared link statistics</h5>
-    @foreach(CityShare share in Model.Shares)
-    {
-        <div>
-            @if (share.isMultipleDayForecast)
-            {
-                <span>@share.City / Multiple days (@share.DayAmount) has been viewed @share.ViewCount times!</span>
-                <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric&displayMultipleDays=true&dayAmount=@share.DayAmount" class="btn btn-outline-secondary btn-sm whitehover text-black">
-                    <span>Click here to view the shared link!</span>
-                </a>
-            }
-            else
-            {
-                @if (share.forecastDate != null)
-                {
-                    <span>@share.City / @share.forecastDate has been viewed @share.ViewCount times!</span>
-                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric&foreCastDate=@share.forecastDate" class="btn btn-outline-secondary btn-sm whitehover text-black">
-                        <span>Click here to view the shared link!</span>
-                    </a>
+    <div style="display: flex; justify-content: center;">
+        <table class="table table-striped table-bordered" style="width: auto; margin: 0 auto;">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="min-width: 300px; text-align: left;">Location and info</th>
+                    <th style="width: 200px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int numeration = 1;
                 }
-                else
+                @foreach (CityShare share in Model.Shares)
                 {
-                    <span>@share.City has been viewed @share.ViewCount times!</span>
-                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric" class="btn btn-outline-secondary btn-sm whitehover text-black">
-                        <span>Click here to view the shared link!</span>
-                    </a>
+                    <tr>
+                        <td style="text-align: center;">@numeration</td>
+                        <td style="text-align: left; word-wrap: break-word;">
+                            @if (share.isMultipleDayForecast)
+                            {
+                                <span>@share.City / Multiple days (@share.DayAmount) has been viewed @share.ViewCount times!</span>
+                            }
+                            else
+                            {
+                                @if (share.forecastDate != null)
+                                {
+                                    <span>@share.City / @share.forecastDate has been viewed @share.ViewCount times!</span>
+                                }
+                                else
+                                {
+                                    <span>@share.City has been viewed @share.ViewCount times!</span>
+                                }
+                            }
+                        </td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            @if (share.isMultipleDayForecast)
+                            {
+                                <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric&displayMultipleDays=true&dayAmount=@share.DayAmount" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                                    <span>Click to view shared link</span>
+                                </a>
+                            }
+                            else
+                            {
+                                @if (share.forecastDate != null)
+                                {
+                                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric&foreCastDate=@share.forecastDate" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                                        <span>Click to view shared link</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="https://localhost:5001/Home/Shared?city=@share.City&shareToken=@share.ShareToken&uid=@share.UserId&metric=@share.Metric" class="btn btn-outline-secondary btn-sm whitehover text-black">
+                                        <span>Click to view shared link</span>
+                                    </a>
+                                }
+                            }
+                            <a asp-controller="Home" asp-action="DeleteSharedLink" asp-route-shareToken="@share.ShareToken" class="btn btn-danger btn-sm" style="margin-top:5px;">
+                                Delete this shared link
+                            </a>
+                        </td>
+                    </tr>
+                    numeration++;
                 }
-            }
-            <a asp-controller="Home" asp-action="DeleteSharedLink" asp-route-shareToken="@share.ShareToken" class="btn btn-danger btn-sm">
-                Delete this shared link
-            </a>
-        </div>
-    }
+            </tbody>
+        </table>
+    </div>
 </div>
