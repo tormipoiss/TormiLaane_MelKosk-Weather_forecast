@@ -52,6 +52,11 @@ namespace Weather_forecast.Controllers
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
+            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList.Count > 0)
+            {
+                ViewData["showHistory"] = "true";
+            }
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -182,8 +187,8 @@ namespace Weather_forecast.Controllers
             _context.SearchHistory.Update(oldHistory);
             _context.SaveChanges();
 
-            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            if (testHistoryCityList.Count > 0)
+            List<City> testHistoryCityList2 = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            if (testHistoryCityList2.Count > 0)
             {
                 ViewData["showHistory"] = "true";
             }
