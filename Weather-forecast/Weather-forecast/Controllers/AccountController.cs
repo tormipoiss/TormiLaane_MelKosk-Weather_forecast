@@ -35,6 +35,11 @@ namespace Weather_forecast.Controllers
                     ModelState.AddModelError("Name", "This username is already taken., Please choose another one!");
                     return View(model);
                 }
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("Name", "Password and confirm password do not match.");
+                    return View(model);
+                }
                 var account = new ApplicationUser()
                 {
                     UserName = model.Username,

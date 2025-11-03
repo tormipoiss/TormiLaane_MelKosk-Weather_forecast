@@ -58,6 +58,12 @@ else
             {
                 <span asp-validation-for="City.CityName" class="text-danger"></span>
             }
+            @if (ViewBag.ShowNoSharedLinksAlert == true)
+            {
+                <script type="text/javascript">
+                    alert("No shared links to display");
+                </script>
+            }
             <label asp-for="ForecastDate" style="margin-top: 9px">Date: </label>
             <input asp-for="ForecastDate" />
             <button type="submit" value="SpecificDay" name="buttonType" style="height:30px;" class="btn btn-outline-secondary btn-sm whitehover text-black">

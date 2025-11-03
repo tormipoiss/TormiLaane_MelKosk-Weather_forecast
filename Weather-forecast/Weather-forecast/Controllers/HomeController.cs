@@ -273,6 +273,7 @@ namespace Weather_forecast.Controllers
             var allShares = _context.Shares.Where(x=>x.UserId==uid).ToList();
             if(allShares.Count == 0)
             {
+                ViewBag.ShowNoSharedLinksAlert = true;
                 return View("~/Views/Home/Index.cshtml");
             }
             return View(new LinkShares() { Shares=allShares});
