@@ -113,7 +113,7 @@ else
                     if (dayDifference > totalDays)
                     {
                         dayDifference = totalDays;
-                        ViewBag.dateError = $"Cannot forecast weather longer than {totalDays} days, defaulted to day {totalDays}";
+                        ViewBag.dateError = $"Cannot forecast weather longer than {Model.Weather.days.Count} days, defaulted to day {Model.Weather.days.Count}";
                     }
                     if (dayDifference < 0)
                     {
@@ -231,7 +231,7 @@ else
                     if (dayDifference > totalDays)
                     {
                         dayDifference = totalDays;
-                        ViewBag.dateError = $"Cannot forecast weather longer than {totalDays} days, defaulted to day {totalDays}";
+                        ViewBag.dateError = $"Cannot forecast weather longer than {Model.Weather.days.Count} days, defaulted to day {Model.Weather.days.Count}";
                     }
                     if (dayDifference < 0)
                     {
