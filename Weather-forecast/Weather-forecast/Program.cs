@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 namespace Weather_forecast
 {
