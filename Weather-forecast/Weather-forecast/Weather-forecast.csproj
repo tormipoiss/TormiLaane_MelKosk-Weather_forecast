@@ -25,6 +25,4 @@
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 
-  <ItemGroup> <Compile Remove="tests\**\*.cs" /> <None Include="tests\**\*" Exclude="**\bin\**;**\obj\**" /> </ItemGroup>
-
 </Project>
