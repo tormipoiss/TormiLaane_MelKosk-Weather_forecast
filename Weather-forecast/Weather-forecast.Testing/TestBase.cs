@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Weather_forecast.Testing.Macros;
 using Microsoft.Extensions.Hosting;
 using Weather_forecast.Testing.Mock;
+using Microsoft.AspNetCore.Identity;
+using Weather_forecast.Models;
+using Moq;
+using System.Security.Claims;
 
 namespace Weather_forecast.Testing
 {
@@ -28,6 +32,18 @@ namespace Weather_forecast.Testing
             });
 
             RegisterMacros(services);
+        }
+        public static UserManager<ApplicationUser> MockUserManager(string id, ApplicationUser user)
+        {
+            var store = new Mock<IUserStore<ApplicationUser>>();
+
+            var mock = new Mock<UserManager<ApplicationUser>>(
+                store.Object, null, null, null, null, null, null, null, null);
+
+            mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+
+            return mock.Object;
         }
         public void Dispose() {}
 
