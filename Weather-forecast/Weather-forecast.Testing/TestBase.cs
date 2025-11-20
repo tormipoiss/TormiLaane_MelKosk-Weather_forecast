@@ -1,14 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Weather_forecast.Data;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Weather_forecast.Testing.Macros;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Weather_forecast.Testing.Mock;
-using Microsoft.AspNetCore.Identity;
-using Weather_forecast.Models;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Security.Claims;
+using Weather_forecast.Controllers;
+using Weather_forecast.Data;
+using Weather_forecast.Models;
+using Weather_forecast.Testing.Macros;
+using Weather_forecast.Testing.Mock;
 
 namespace Weather_forecast.Testing
 {
@@ -33,15 +36,43 @@ namespace Weather_forecast.Testing
 
             RegisterMacros(services);
         }
-        public static UserManager<ApplicationUser> MockUserManager(string id, ApplicationUser user)
+        public static Mock<UserManager<TUser>> MockUserManager<TUser>(TUser user) where TUser : class
         {
-            var store = new Mock<IUserStore<ApplicationUser>>();
+            //string password = null;
+            //var store = new Mock<IUserStore<ApplicationUser>>();
 
-            var mock = new Mock<UserManager<ApplicationUser>>(
-                store.Object, null, null, null, null, null, null, null, null);
+            //var mock = new Mock<UserManager<ApplicationUser>>(
+            //    store.Object, null, null, null, null, null, null, null, null);
 
-            mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
-            mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            //mock.Setup(m => m.CreateAsync(user, password)).ReturnsAsync(IdentityResult.Success);
+
+            //return mock.Object;
+
+            var store = new Mock<IUserStore<TUser>>();
+            var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
+            mgr.Object.UserValidators.Add(new UserValidator<TUser>());
+            mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
+
+            //mgr.Setup(x => x.DeleteAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
+            mgr.Setup(x => x.CreateAsync(It.IsAny<TUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            //mgr.Setup(x => x.UpdateAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
+
+            return mgr;
+        }
+        public static SignInManager<ApplicationUser> MockSignInManager(UserManager<ApplicationUser> userManager,
+            IHttpContextAccessor contextAccessor,
+            IUserClaimsPrincipalFactory<ApplicationUser> UserClaimsPrincipalFactory,
+            IOptions<IdentityOptions> configMock)
+        {
+            //var store = new Mock<IUserStore<ApplicationUser>>();
+
+            var mock = new Mock<SignInManager<ApplicationUser>>(
+                userManager, contextAccessor, UserClaimsPrincipalFactory, configMock, null, null, null);
+
+            //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
 
             return mock.Object;
         }
