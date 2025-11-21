@@ -21,14 +21,16 @@ namespace Weather_forecast.Controllers
         private readonly DatabaseContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly WeatherAPIHandler _weatherAPIHandler;
+        private readonly QrCodeService _qrCodeService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context)
+        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService)
         {
             _logger = logger;
             _weatherAPIHandler = weatherAPIHandler;
             _userManager = userManager;
             _context = context;
+            _qrCodeService = qrCodeService;
         }
 
         [HttpPost("Home/City")]
@@ -155,12 +157,8 @@ namespace Weather_forecast.Controllers
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
             ViewBag.ForecastDate = model.ForecastDate != null ? model.ForecastDate : model.City.ForecastDate != null ? model.City.ForecastDate : DateTime.Now;
-            var qrGen = new QRCodeGenerator();
-            var imgType = Base64QRCode.ImageType.Png;
-            QRCodeData qrCodeData = qrGen.CreateQrCode(ViewBag.ShareLink, QRCodeGenerator.ECCLevel.Q);
-            Base64QRCode qrCode = new Base64QRCode(qrCodeData);
-            string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
-            result.QrCodeBase64 = qrCodeImageAsBase64;
+            result.QrCodeBase64 = _qrCodeService.CreateSharedForecastQRCodeAsB64(ViewBag.ShareLink);
+
 
             cityToHistory.HistoryUserId = uid;
             History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
@@ -310,12 +308,7 @@ namespace Weather_forecast.Controllers
             {
                 result.DisplayMultipleDays = false;
             }
-            var qrGen = new QRCodeGenerator();
-            var imgType = Base64QRCode.ImageType.Png;
-            QRCodeData qrCodeData = qrGen.CreateQrCode($"https://localhost:5001/Home/Shared?city={city}&shareToken={shareToken}&uid={uid}&metric={metric}&foreCastDate={result.ForecastDate}", QRCodeGenerator.ECCLevel.Q);
-            Base64QRCode qrCode = new Base64QRCode(qrCodeData);
-            string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
-            result.QrCodeBase64 = qrCodeImageAsBase64;
+            result.QrCodeBase64 = _qrCodeService.CreateSharedForecastQRCodeAsB64(new ShareDto() { City = city, Metric = metric, UID = uid, ShareToken = shareToken, Date = result.ForecastDate });
             return View("~/Views/Home/Index.cshtml", result);
         }
         public IActionResult Privacy()

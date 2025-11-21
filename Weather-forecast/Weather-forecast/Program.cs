@@ -14,6 +14,7 @@ namespace Weather_forecast
 
             builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
             builder.Services.AddHttpClient<WeatherAPIHandler>();
+            builder.Services.AddSingleton<QrCodeService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(option =>
