@@ -44,7 +44,7 @@ namespace Weather_forecast.Controllers
                 ViewBag.ShowNoSharedLinksAlert = true;
                 return View("~/Views/Home/Index.cshtml");
             }
-            return View(new LinkShares() { Shares = allShares });
+            return View("~/Views/Home/ShareLinkStatistics.cshtml", new LinkShares() { Shares = allShares });
         }
         [HttpGet("Home/DeleteSharedLink")] // Should be post but im too lazy to add a form to just delete a shared link
         [Authorize]
@@ -132,7 +132,7 @@ namespace Weather_forecast.Controllers
             var uid = _userManager.GetUserId(User);
             CityAndApi historyCities = new CityAndApi();
             historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            return View(historyCities);
+            return View("~/Views/Home/History.cshtml", historyCities);
         }
     }
 }
