@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +20,11 @@ namespace Weather_forecast.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly ILogger<HomeController> _logger;
-        private readonly WeatherAPIHandler _weatherAPIHandler;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public StatisticsController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context)
+        public StatisticsController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, DatabaseContext context)
         {
             _logger = logger;
-            _weatherAPIHandler = weatherAPIHandler;
             _userManager = userManager;
             _context = context;
         }
@@ -79,84 +77,6 @@ namespace Weather_forecast.Controllers
             return RedirectToAction("Statistics");
         }
 
-
-        [HttpGet("Home/Shared")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetForecastSharing(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate, bool? displayMultipleDays, int? DayAmount)
-        {
-            if (city == null)
-            {
-                return View("~/Views/Home/Index.cshtml");
-            }
-            var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
-            if (exists == null)
-            {
-                return View("~/Views/Home/Index.cshtml");
-            }
-            if (exists.City != city)
-            {
-                return View("~/Views/Home/Index.cshtml");
-            }
-            var usr = await _context.Users.FirstOrDefaultAsync(x => x.Id == uid.ToString());
-            if (usr == null)
-            {
-                return View("~/Views/Home/Index.cshtml");
-            }
-            if (User.Identity != null && !User.Identity.IsAuthenticated)
-            {
-                exists.ViewCount++;
-            }
-            await _context.SaveChangesAsync();
-            var result = await _weatherAPIHandler.FetchDataAsync(city, metric);
-            ViewBag.SharedUrl = true;
-            if (result == null)
-            {
-                ViewBag.error = true;
-                return View("~/Views/Home/Index.cshtml");
-            }
-            if (metric)
-            {
-                result.Units = new()
-                {
-                    KmOrMile = "km",
-                    COrF = "C",
-                    MmOrInches = "mm"
-                };
-            }
-            else
-            {
-                result.Units = new()
-                {
-                    KmOrMile = "miles",
-                    COrF = "F",
-                    MmOrInches = "inches"
-                };
-            }
-            if (foreCastDate == null)
-            {
-                result.ForecastDate = DateTime.Now;
-            }
-            else
-            {
-                result.ForecastDate = DateTime.Parse(foreCastDate);
-            }
-            if (displayMultipleDays == true)
-            {
-                result.DisplayMultipleDays = true;
-                result.DayAmount = DayAmount;
-            }
-            else
-            {
-                result.DisplayMultipleDays = false;
-            }
-            var qrGen = new QRCodeGenerator();
-            var imgType = Base64QRCode.ImageType.Png;
-            QRCodeData qrCodeData = qrGen.CreateQrCode($"https://localhost:5001/Home/Shared?city={city}&shareToken={shareToken}&uid={uid}&metric={metric}&foreCastDate={result.ForecastDate}", QRCodeGenerator.ECCLevel.Q);
-            Base64QRCode qrCode = new Base64QRCode(qrCodeData);
-            string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
-            result.QrCodeBase64 = qrCodeImageAsBase64;
-            return View("~/Views/Home/Index.cshtml", result);
-        }
         [HttpPost("Home/ShareLink")]
         [Authorize]
         public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate, bool? displayMultipleDays, int? DayAmount)
@@ -203,6 +123,16 @@ namespace Weather_forecast.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet("Home/History")]
+        [Authorize]
+        public async Task<IActionResult> History()
+        {
+            var uid = _userManager.GetUserId(User);
+            CityAndApi historyCities = new CityAndApi();
+            historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            return View(historyCities);
         }
     }
 }
