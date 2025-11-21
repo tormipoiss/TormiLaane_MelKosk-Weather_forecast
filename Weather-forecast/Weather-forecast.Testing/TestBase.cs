@@ -51,15 +51,29 @@ namespace Weather_forecast.Testing
             //return mock.Object;
 
             var store = new Mock<IUserStore<TUser>>();
-            var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
-            mgr.Object.UserValidators.Add(new UserValidator<TUser>());
-            mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
+            var userManager = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
+            userManager.Object.UserValidators.Add(new UserValidator<TUser>());
+            userManager.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
 
             //mgr.Setup(x => x.DeleteAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
-            mgr.Setup(x => x.CreateAsync(It.IsAny<TUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            userManager.Setup(x => x.CreateAsync(It.IsAny<TUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
             //mgr.Setup(x => x.UpdateAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
 
-            return mgr;
+            return userManager;
+        }
+        public static UserManager<ApplicationUser> MockUserManager(string id, ApplicationUser user)
+        {
+            var store = new Mock<IUserStore<ApplicationUser>>();
+
+            var mock = new Mock<UserManager<ApplicationUser>>(
+                store.Object, null, null, null, null, null, null, null, null);
+
+            //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            //mock.Setup(m => m.CreateAsync(user, "Abc-1")).ReturnsAsync(IdentityResult.Success);
+            //mock.Setup(m => m.CreateAsync(A<ApplicationUser>, "Abc-1").ReturnsAsync(IdentityResult.Success);
+
+            return mock.Object;
         }
         public static SignInManager<ApplicationUser> MockSignInManager(UserManager<ApplicationUser> userManager,
             IHttpContextAccessor contextAccessor,

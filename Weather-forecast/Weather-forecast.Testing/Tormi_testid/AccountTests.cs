@@ -46,15 +46,15 @@ namespace Weather_forecast.Testing.Tormi_testid
             var uid = "user123";
             var db = Svc<DatabaseContext>();
             db.SaveChanges();
-            var userManager = MockUserManager(new ApplicationUser { Id = uid });
+            var userManager = MockUserManager(uid, new ApplicationUser { Id = uid });
             IHttpContextAccessor httpContext = new Mock<HttpContextAccessor>().Object;
             var identityOptions = new IdentityOptions();
             var optionsMock = new Mock<IOptions<IdentityOptions>>();
             optionsMock.Setup(o => o.Value).Returns(identityOptions);
             IUserClaimsPrincipalFactory<ApplicationUser> UserClaimsPrincipalFactory = new Mock<UserClaimsPrincipalFactory<ApplicationUser>>(userManager, optionsMock.Object).Object;
-            var signInManager = MockSignInManager(userManager.Object, httpContext, UserClaimsPrincipalFactory, optionsMock.Object);
+            var signInManager = MockSignInManager(userManager, httpContext, UserClaimsPrincipalFactory, optionsMock.Object);
             AccountController accountController = new AccountController(
-                userManager.Object,
+                userManager,
                 signInManager,
                 db
             );
