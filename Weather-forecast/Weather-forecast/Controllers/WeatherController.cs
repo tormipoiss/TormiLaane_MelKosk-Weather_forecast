@@ -22,15 +22,17 @@ namespace Weather_forecast.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly WeatherAPIHandler _weatherAPIHandler;
         private readonly QrCodeService _qrCodeService;
+        private readonly LocationByIPService _locationByIPService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService)
+        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService, LocationByIPService locationByIPService)
         {
             _logger = logger;
             _weatherAPIHandler = weatherAPIHandler;
             _userManager = userManager;
             _context = context;
             _qrCodeService = qrCodeService;
+            _locationByIPService = locationByIPService;
         }
 
         [HttpPost("Home/City")]
@@ -56,19 +58,11 @@ namespace Weather_forecast.Controllers
             }
             if (buttonType == "GPS")
             {
-                HttpClient _httpClient = new HttpClient();
-                var resIP = await _httpClient.GetAsync("https://api.ipify.org");
-                resIP.EnsureSuccessStatusCode();
-                string ipAddress = await resIP.Content.ReadAsStringAsync();
-
-                var resIPLocation = await _httpClient.GetAsync($"https://geo.ipify.org/api/v2/country,city?apiKey=at_0tVUddlB1XlCDbJBhAskOnQwiIcsr&ipAddress={ipAddress}");
-                resIPLocation.EnsureSuccessStatusCode();
-                string content = await resIPLocation.Content.ReadAsStringAsync();
-                var IpInfo = JsonSerializer.Deserialize<IPifyAPIResponse>(content);
+                string LocationByIP = await _locationByIPService.LocationByIP();
 
                 ViewBag.ShowModelError = false;
 
-                model.City.CityName = "Tallinn";
+                model.City.CityName = LocationByIP;
                 return View("~/Views/Home/Index.cshtml", model);
             }
             ViewBag.ShowModelError = true;
