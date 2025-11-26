@@ -18,21 +18,19 @@ namespace Weather_forecast.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DatabaseContext _context;
-        private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SearchHistoryServices _searchHistoryServices;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, DatabaseContext context)
+        public HomeController(UserManager<ApplicationUser> userManager, SearchHistoryServices searchHistoryServices)
         {
-            _logger = logger;
             _userManager = userManager;
-            _context = context;
+            _searchHistoryServices = searchHistoryServices;
         }
 
         public IActionResult Index()
         {
             var uid = _userManager.GetUserId(User);
-            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+            History? testHistory = _searchHistoryServices.GetUserHistory(uid);
             if (testHistory != default)
             {
                 ViewData["showHistory"] = "true";
