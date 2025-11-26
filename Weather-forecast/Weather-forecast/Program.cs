@@ -21,6 +21,7 @@ namespace Weather_forecast
             builder.Services.AddSingleton<SharesServices>();
             builder.Services.AddSingleton<UserHistoryService>();
             builder.Services.AddSingleton<ShareLinkService>();
+            builder.Services.AddTransient<SaveDatabaseService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(option =>

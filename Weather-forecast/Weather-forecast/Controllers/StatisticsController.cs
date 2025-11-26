@@ -18,15 +18,19 @@ namespace Weather_forecast.Controllers
 {
     public class StatisticsController : Controller
     {
-        private readonly DatabaseContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SharesServices _sharesServices;
+        private readonly SaveDatabaseService _saveDatabaseService;
+        private readonly CitiesServices _citiesServices;
 
-        public StatisticsController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, DatabaseContext context)
+        public StatisticsController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, SharesServices sharesServices, SaveDatabaseService saveDatabaseService, CitiesServices citiesServices)
         {
             _logger = logger;
             _userManager = userManager;
-            _context = context;
+            _sharesServices = sharesServices;
+            _saveDatabaseService = saveDatabaseService;
+            _citiesServices = citiesServices;
         }
 
         [HttpGet("Home/Statistics")]
@@ -38,7 +42,7 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            var allShares = _context.Shares.Where(x => x.UserId == uid).ToList();
+            var allShares = _sharesServices.GetUserShares(uid);
             if (allShares.Count == 0)
             {
                 ViewBag.ShowNoSharedLinksAlert = true;
@@ -63,7 +67,7 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            var share = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            var share = await _sharesServices.GetShareByShareToken(shareToken);
             if (share == null)
             {
                 return RedirectToAction("Statistics");
@@ -72,16 +76,21 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            _context.Shares.Remove(share);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Statistics");
+            _sharesServices.Remove(share);
+            await _saveDatabaseService.SaveChangesAsync();
+            var allShares = _sharesServices.GetUserShares(uid);
+            if (allShares.Count == 0)
+            {
+                return View("~/Views/Home/Index.cshtml");
+            }
+            return Redirect("https://localhost:5001/Home/Statistics");
         }
 
         [HttpPost("Home/ShareLink")]
         [Authorize]
         public async Task<IActionResult> ConfirmShare(string city, Guid shareToken, Guid uid, bool metric, string? foreCastDate, bool? displayMultipleDays, int? DayAmount)
         {
-            var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            var exists = await _sharesServices.GetShareByShareToken(shareToken);
             if (exists != null)
             {
                 return BadRequest();
@@ -108,13 +117,13 @@ namespace Weather_forecast.Controllers
             }
             if (displayMultipleDays == true)
             {
-                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed, isMultipleDayForecast = true, DayAmount = DayAmount });
+                await _sharesServices.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed, isMultipleDayForecast = true, DayAmount = DayAmount });
             }
             else
             {
-                await _context.Shares.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed });
+                await _sharesServices.AddAsync(new() { City = city, ShareToken = shareToken.ToString(), UserId = uid.ToString(), Metric = metric, forecastDate = forecastDateFixed });
             }
-            await _context.SaveChangesAsync();
+            await _saveDatabaseService.SaveChangesAsync();
             //var existingUserByName = await _userManager.FindByNameAsync(User.Identity.Name);
             return Ok();
         }
@@ -131,7 +140,7 @@ namespace Weather_forecast.Controllers
         {
             var uid = _userManager.GetUserId(User);
             CityAndApi historyCities = new CityAndApi();
-            historyCities.Cities = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            historyCities.Cities = _citiesServices.GetCitiesByUserID(uid);
             return View("~/Views/Home/History.cshtml", historyCities);
         }
     }

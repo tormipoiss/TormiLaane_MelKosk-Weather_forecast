@@ -15,19 +15,9 @@ namespace Weather_forecast.Services
         {
             _context = context;
         }
-        public async Task<string> LocationByIP()
+        public List<City> GetCitiesByUserID(string? uid)
         {
-            HttpClient _httpClient = new HttpClient();
-            var resIP = await _httpClient.GetAsync("https://api.ipify.org");
-            resIP.EnsureSuccessStatusCode();
-            string ipAddress = await resIP.Content.ReadAsStringAsync();
-
-            var resIPLocation = await _httpClient.GetAsync($"https://geo.ipify.org/api/v2/country,city?apiKey=at_0tVUddlB1XlCDbJBhAskOnQwiIcsr&ipAddress={ipAddress}");
-            resIPLocation.EnsureSuccessStatusCode();
-            string content = await resIPLocation.Content.ReadAsStringAsync();
-            var IpInfo = JsonSerializer.Deserialize<IPifyAPIResponse>(content);
-
-            return IpInfo.location.city;
+            return _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
         }
     }
 }
