@@ -30,7 +30,7 @@ namespace Weather_forecast.Testing
             services.AddScoped<LocationByIPService>();
             services.AddScoped<QrCodeService>();
             services.AddScoped<CitiesServices>();
-            services.AddScoped<SearchHistoryServices>();
+            //services.AddScoped<SearchHistoryServices>();
             services.AddScoped<SharesServices>();
             services.AddScoped<SaveDatabaseService>();
 
