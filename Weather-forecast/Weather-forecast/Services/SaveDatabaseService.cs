@@ -19,9 +19,5 @@ namespace Weather_forecast.Services
         {
             await _context.SaveChangesAsync();
         }
-        public void SaveChanges()
-        {
-            _context.SaveChanges();
-        }
     }
 }

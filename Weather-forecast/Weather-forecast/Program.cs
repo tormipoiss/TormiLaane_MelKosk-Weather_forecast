@@ -16,9 +16,10 @@ namespace Weather_forecast
             builder.Services.AddHttpClient<WeatherAPIHandler>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton<LocationByIPService>();
-            builder.Services.AddSingleton<CitiesServices>();
-            builder.Services.AddSingleton<SearchHistoryServices>();
-            builder.Services.AddSingleton<SharesServices>();
+            builder.Services.AddTransient<CitiesServices>();
+            builder.Services.AddTransient<SearchHistoryServices>();
+            builder.Services.AddTransient<SharesServices>();
+            builder.Services.AddTransient<SaveDatabaseService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(option =>
