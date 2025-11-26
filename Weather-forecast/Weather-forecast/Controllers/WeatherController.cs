@@ -24,8 +24,10 @@ namespace Weather_forecast.Controllers
         private readonly QrCodeService _qrCodeService;
         private readonly LocationByIPService _locationByIPService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserHistoryService _historyService;
+        private readonly ShareLinkService _shareLinkService;
 
-        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService, LocationByIPService locationByIPService)
+        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService, LocationByIPService locationByIPService, UserHistoryService historyService, ShareLinkService shareLinkService)
         {
             _logger = logger;
             _weatherAPIHandler = weatherAPIHandler;
@@ -33,23 +35,37 @@ namespace Weather_forecast.Controllers
             _context = context;
             _qrCodeService = qrCodeService;
             _locationByIPService = locationByIPService;
+            _historyService = historyService;
+            _shareLinkService = shareLinkService;
         }
 
         [HttpPost("Home/City")]
         [Authorize]
         public async Task<IActionResult> CityGet(CityAndApi model, string buttonType)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+
+            if (string.IsNullOrEmpty(model.City.CityName))
+            {
+                ViewBag.error = true;
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+
             var uid = _userManager.GetUserId(User);
             if (uid == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
-            List<City> testHistoryCityList = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            if (testHistoryCityList.Count > 0)
+            var userHistory = _historyService.GetUserHistory(uid);
+            if (userHistory != null)
             {
                 ViewData["showHistory"] = "true";
             }
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -67,17 +83,13 @@ namespace Weather_forecast.Controllers
             }
             ViewBag.ShowModelError = true;
             ViewBag.error = false;
-            if (!ModelState.IsValid)
-            {
-                return View("~/Views/Home/Index.cshtml", model);
-            }
-            if (string.IsNullOrEmpty(model.City.CityName)) return BadRequest("City can not be null!");
-            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName,user.GlobalMetric);
+            var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName, user.GlobalMetric);
             if (result == null)
             {
                 ViewBag.error = true;
                 return View("~/Views/Home/Index.cshtml", model);
             }
+
             if (user.GlobalMetric)
             {
                 result.Units = new()
@@ -121,32 +133,19 @@ namespace Weather_forecast.Controllers
                 ViewBag.DayAmount = null;
             }
             //ApplicationUser? usr = await _userManager.GetUserAsync(User);
-            
-            if (alreadyShared != null)
-            {
-                if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
-                {
-                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}&displayMultipleDays=true&dayAmount={(model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount)}";
-                }
-                else
-                {
-                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={alreadyShared.ShareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
-                }
-                ViewBag.ShareToken = alreadyShared.ShareToken;
-            }
-            else
-            {
-                string shareToken = Guid.NewGuid().ToString();
-                if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
-                {
-                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}&displayMultipleDays=true&dayAmount={(model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount)}";
-                }
-                else
-                {
-                    ViewBag.ShareLink = $"https://localhost:5001/Home/Shared?city={model.City.CityName}&shareToken={shareToken}&uid={uid}&metric={model.Metric}&foreCastDate={result.ForecastDate}";
-                }
-                ViewBag.ShareToken = shareToken;
-            }
+            string shareToken = alreadyShared != null ? alreadyShared.ShareToken : Guid.NewGuid().ToString();
+            ViewBag.ShareLink = _shareLinkService.CreateSharedLink(
+                    new()
+                    {
+                        CityName = model.City.CityName,
+                        Date = result.ForecastDate,
+                        ShareToken = shareToken,
+                        UserId = uid,
+                        IsMetric = model.Metric,
+                        MultipleDays = (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true) ? true : false,
+                        DayAmount = (model.City.DayAmount != null ? model.City.DayAmount : model.DayAmount)
+                    });
+            ViewBag.ShareToken = shareToken;
             ViewBag.City = model.City.CityName;
             ViewBag.Uid = uid;
             ViewBag.Metric = model.Metric;
@@ -155,24 +154,14 @@ namespace Weather_forecast.Controllers
 
 
             cityToHistory.HistoryUserId = uid;
-            History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
-            if (testHistory == default)
-            {
-                var history = new History();
-                history.UserId = uid;
-                _context.SearchHistory.Add(history);
-                _context.SaveChanges();
-            }
-            History? oldHistory = _context.SearchHistory.First(History => History.UserId == uid);
-            oldHistory.Cities.Add(cityToHistory);
-            _context.SearchHistory.Update(oldHistory);
-            _context.SaveChanges();
 
-            List<City> testHistoryCityList2 = _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
-            if (testHistoryCityList2.Count > 0)
+            if (userHistory == null)
             {
-                ViewData["showHistory"] = "true";
+                userHistory = _historyService.AddUserHistory(new() { UserId = uid });
             }
+            userHistory.Cities.Add(cityToHistory);
+            _historyService.UpdateUserHistory(userHistory);
+            ViewData["showHistory"] = "true";
 
             return View("~/Views/Home/Index.cshtml", result);
         }
@@ -255,12 +244,12 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            if(User.Identity != null && !User.Identity.IsAuthenticated)
+            if (User.Identity != null && !User.Identity.IsAuthenticated)
             {
                 exists.ViewCount++;
             }
             await _context.SaveChangesAsync();
-            var result = await _weatherAPIHandler.FetchDataAsync(city,metric);
+            var result = await _weatherAPIHandler.FetchDataAsync(city, metric);
             ViewBag.SharedUrl = true;
             if (result == null)
             {
