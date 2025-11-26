@@ -43,17 +43,6 @@ namespace Weather_forecast.Controllers
         [Authorize]
         public async Task<IActionResult> CityGet(CityAndApi model, string buttonType)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("~/Views/Home/Index.cshtml", model);
-            }
-
-            if (string.IsNullOrEmpty(model.City.CityName))
-            {
-                ViewBag.error = true;
-                return View("~/Views/Home/Index.cshtml", model);
-            }
-
             var uid = _userManager.GetUserId(User);
             if (uid == null)
             {
@@ -83,6 +72,14 @@ namespace Weather_forecast.Controllers
             }
             ViewBag.ShowModelError = true;
             ViewBag.error = false;
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Home/Index.cshtml", model);
+            }
+            if (string.IsNullOrEmpty(model.City.CityName))
+            {
+                return BadRequest("City can not be null!");
+            }
             var result = await _weatherAPIHandler.FetchDataAsync(model.City.CityName, user.GlobalMetric);
             if (result == null)
             {
