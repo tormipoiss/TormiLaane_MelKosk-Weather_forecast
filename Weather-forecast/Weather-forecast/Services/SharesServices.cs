@@ -28,10 +28,12 @@ namespace Weather_forecast.Services
         public void Remove(CityShare? share)
         {
             _context.Shares.Remove(share);
+            _context.SaveChanges();
         }
         public async Task AddAsync(CityShare share)
         {
             await _context.Shares.AddAsync(share);
+            await _context.SaveChangesAsync();
         }
         public async Task<CityShare?> GetAlreadySharedShare(string? uid, string cityName)
         {
