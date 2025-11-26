@@ -16,10 +16,10 @@ namespace Weather_forecast
             builder.Services.AddHttpClient<WeatherAPIHandler>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton<LocationByIPService>();
-            builder.Services.AddSingleton<CitiesServices>();
-            builder.Services.AddSingleton<SearchHistoryServices>();
-            builder.Services.AddSingleton<SharesServices>();
-            builder.Services.AddSingleton<UserHistoryService>();
+            builder.Services.AddTransient<CitiesServices>();
+            builder.Services.AddTransient<SearchHistoryServices>();
+            builder.Services.AddTransient<SharesServices>();
+            builder.Services.AddTransient<UserHistoryService>();
             builder.Services.AddSingleton<ShareLinkService>();
             builder.Services.AddTransient<SaveDatabaseService>();
 
