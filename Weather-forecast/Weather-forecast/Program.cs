@@ -17,11 +17,11 @@ namespace Weather_forecast
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton<LocationByIPService>();
             builder.Services.AddTransient<CitiesServices>();
-            builder.Services.AddTransient<SearchHistoryServices>();
             builder.Services.AddTransient<SharesServices>();
             builder.Services.AddTransient<UserHistoryService>();
-            builder.Services.AddSingleton<ShareLinkService>();
+            builder.Services.AddTransient<ShareLinkService>();
             builder.Services.AddTransient<SaveDatabaseService>();
+            builder.Services.AddTransient<UserService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(option =>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using QRCoder;
 using System.Drawing;
@@ -8,16 +9,16 @@ using Weather_forecast.Models;
 
 namespace Weather_forecast.Services
 {
-    public class SearchHistoryServices
+    public class UserService
     {
         private readonly DatabaseContext _context;
-        public SearchHistoryServices(DatabaseContext context)
+        public UserService(DatabaseContext context)
         {
             _context = context;
         }
-        public History? GetUserHistory(string? uid)
+        public async Task<ApplicationUser?> GetUserByID(Guid uid)
         {
-            return _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == uid.ToString());
         }
     }
 }

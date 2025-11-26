@@ -18,7 +18,6 @@ namespace Weather_forecast.Controllers
 {
     public class WeatherController : Controller
     {
-        private readonly DatabaseContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly WeatherAPIHandler _weatherAPIHandler;
         private readonly QrCodeService _qrCodeService;
@@ -26,17 +25,22 @@ namespace Weather_forecast.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly UserHistoryService _historyService;
         private readonly ShareLinkService _shareLinkService;
+        private readonly SharesServices _sharesServices;
+        private readonly UserService _userService;
+        private readonly SaveDatabaseService _saveDatabaseService;
 
-        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, DatabaseContext context, QrCodeService qrCodeService, LocationByIPService locationByIPService, UserHistoryService historyService, ShareLinkService shareLinkService)
+        public WeatherController(ILogger<HomeController> logger, WeatherAPIHandler weatherAPIHandler, UserManager<ApplicationUser> userManager, QrCodeService qrCodeService, LocationByIPService locationByIPService, UserHistoryService historyService, ShareLinkService shareLinkService, SharesServices sharesServices, UserService userService, SaveDatabaseService saveDatabaseService)
         {
             _logger = logger;
             _weatherAPIHandler = weatherAPIHandler;
             _userManager = userManager;
-            _context = context;
             _qrCodeService = qrCodeService;
             _locationByIPService = locationByIPService;
             _historyService = historyService;
             _shareLinkService = shareLinkService;
+            _sharesServices = sharesServices;
+            _userService = userService;
+            _saveDatabaseService = saveDatabaseService;
         }
 
         [HttpPost("Home/City")]
@@ -112,7 +116,7 @@ namespace Weather_forecast.Controllers
             cityToHistory.DateOfSearch = DateTime.Now;
             cityToHistory.HistoryUserId = uid;
             cityToHistory.ForecastDate = model.ForecastDate;
-            var alreadyShared = await _context.Shares.Where(u => u.UserId == uid).FirstOrDefaultAsync(x => x.City == model.City.CityName);
+            var alreadyShared = await _sharesServices.GetAlreadySharedShare(uid, model.City.CityName);
             if (buttonType == "MultipleDays" || model.City.isMultipleDayForecast == true)
             {
                 result.DisplayMultipleDays = true;
@@ -227,7 +231,7 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            var exists = await _context.Shares.FirstOrDefaultAsync(x => x.ShareToken == shareToken.ToString());
+            var exists = await _sharesServices.GetShareByShareToken(shareToken);
             if (exists == null)
             {
                 return View("~/Views/Home/Index.cshtml");
@@ -236,7 +240,7 @@ namespace Weather_forecast.Controllers
             {
                 return View("~/Views/Home/Index.cshtml");
             }
-            var usr = await _context.Users.FirstOrDefaultAsync(x => x.Id == uid.ToString());
+            var usr = await _userService.GetUserByID(uid);
             if (usr == null)
             {
                 return View("~/Views/Home/Index.cshtml");
@@ -245,7 +249,7 @@ namespace Weather_forecast.Controllers
             {
                 exists.ViewCount++;
             }
-            await _context.SaveChangesAsync();
+            await _saveDatabaseService.SaveChangesAsync();
             var result = await _weatherAPIHandler.FetchDataAsync(city, metric);
             ViewBag.SharedUrl = true;
             if (result == null)

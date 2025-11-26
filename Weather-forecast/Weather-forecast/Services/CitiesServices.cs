@@ -17,7 +17,7 @@ namespace Weather_forecast.Services
         }
         public List<City> GetCitiesByUserID(string? uid)
         {
-            return _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
+            return  _context.Cities.Where(City => City.HistoryUserId == uid).ToList();
         }
     }
 }

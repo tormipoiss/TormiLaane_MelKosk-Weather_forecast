@@ -13,13 +13,13 @@ namespace Weather_forecast.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly SearchHistoryServices _searchHistoryServices;
+        private readonly UserHistoryService _userHistoryService;
         private readonly SaveDatabaseService _saveDatabaseService;
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, DatabaseContext context, SearchHistoryServices searchHistoryServices, SaveDatabaseService saveDatabaseService)
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, DatabaseContext context, UserHistoryService userHistoryService, SaveDatabaseService saveDatabaseService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _searchHistoryServices = searchHistoryServices;
+            _userHistoryService = userHistoryService;
             _saveDatabaseService = saveDatabaseService;
         }
         public IActionResult Register()
@@ -92,7 +92,7 @@ namespace Weather_forecast.Controllers
                 if (result.Succeeded)
                 {
                     var uid = _userManager.GetUserId(User);
-                    History? testHistory = _searchHistoryServices.GetUserHistory(uid);
+                    History? testHistory = _userHistoryService.GetUserHistory(uid);
                     if (testHistory != default)
                     {
                         ViewData["showHistory"] = "true";

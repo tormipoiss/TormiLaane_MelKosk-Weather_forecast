@@ -33,5 +33,9 @@ namespace Weather_forecast.Services
         {
             await _context.Shares.AddAsync(share);
         }
+        public async Task<CityShare?> GetAlreadySharedShare(string? uid, string cityName)
+        {
+            return await _context.Shares.Where(u => u.UserId == uid).FirstOrDefaultAsync(x => x.City == cityName);
+        }
     }
 }
