@@ -8,14 +8,14 @@ using Weather_forecast.Services;
 
 namespace Weather_forecast.Testing.Mel_Testid
 {
-    public class CitiesTests : TestBase
+    public class UserHistoryTests : TestBase
     {
-        private async Task AddCitiesToHistory(string[] cities,string uid)
+        private async Task AddCitiesToHistory(string[] cities, string uid)
         {
             var db = Svc<DatabaseContext>();
-            foreach(var city in cities)
+            foreach (var city in cities)
             {
-                await db.Cities.AddAsync(new() { CityName = city, HistoryUserId = uid});
+                await db.Cities.AddAsync(new() { CityName = city, HistoryUserId = uid });
             }
             db.SaveChanges();
         }
@@ -25,7 +25,7 @@ namespace Weather_forecast.Testing.Mel_Testid
             string[] cities = new string[] { "Tallinn", "New York", "Paris", "Helsinki", "Pärnu" };
             string user = Guid.NewGuid().ToString();
             await AddCitiesToHistory(cities, user);
-            var gottenCities = Svc<CitiesServices>().GetCitiesByUserID(user);
+            var gottenCities = Svc<UserHistoryService>().GetUserHistoryAsList(user);
             Assert.Equal(cities.Length, gottenCities.Count);
 
             for (int i = 0; i < cities.Length; i++)

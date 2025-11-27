@@ -29,10 +29,10 @@ namespace Weather_forecast.Testing
         {
             services.AddScoped<LocationByIPService>();
             services.AddScoped<QrCodeService>();
-            services.AddScoped<CitiesServices>();
             //services.AddScoped<SearchHistoryServices>();
             services.AddScoped<SharesServices>();
             services.AddScoped<SaveDatabaseService>();
+            services.AddScoped<UserHistoryService>();
 
             services.AddDbContext<DatabaseContext>(x =>
             {

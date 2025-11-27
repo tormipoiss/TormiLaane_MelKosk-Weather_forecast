@@ -22,15 +22,15 @@ namespace Weather_forecast.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SharesServices _sharesServices;
         private readonly SaveDatabaseService _saveDatabaseService;
-        private readonly CitiesServices _citiesServices;
+        private readonly UserHistoryService _userHistoryService;
 
-        public StatisticsController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, SharesServices sharesServices, SaveDatabaseService saveDatabaseService, CitiesServices citiesServices)
+        public StatisticsController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, SharesServices sharesServices, SaveDatabaseService saveDatabaseService, UserHistoryService userHistoryService)
         {
             _logger = logger;
             _userManager = userManager;
             _sharesServices = sharesServices;
             _saveDatabaseService = saveDatabaseService;
-            _citiesServices = citiesServices;
+            _userHistoryService = userHistoryService;
         }
 
         [HttpGet("Home/Statistics")]
@@ -140,7 +140,7 @@ namespace Weather_forecast.Controllers
         {
             var uid = _userManager.GetUserId(User);
             CityAndApi historyCities = new CityAndApi();
-            historyCities.Cities = _citiesServices.GetCitiesByUserID(uid);
+            historyCities.Cities = _userHistoryService.GetUserHistoryAsList(uid);
             return View("~/Views/Home/History.cshtml", historyCities);
         }
     }
