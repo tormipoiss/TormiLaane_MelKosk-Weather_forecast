@@ -33,6 +33,7 @@ namespace Weather_forecast.Testing
             services.AddScoped<SharesServices>();
             services.AddScoped<SaveDatabaseService>();
             services.AddScoped<UserHistoryService>();
+            services.AddScoped(_=>new WeatherAPIHandler(new HttpClient()));
 
             services.AddDbContext<DatabaseContext>(x =>
             {
