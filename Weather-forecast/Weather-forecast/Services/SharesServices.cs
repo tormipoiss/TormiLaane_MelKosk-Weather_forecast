@@ -33,7 +33,7 @@ namespace Weather_forecast.Services
         public async Task AddAsync(CityShare share)
         {
             await _context.Shares.AddAsync(share);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         public async Task<CityShare?> GetAlreadySharedShare(string? uid, string cityName)
         {

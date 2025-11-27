@@ -29,11 +29,13 @@ namespace Weather_forecast.Testing
         {
             services.AddScoped<LocationByIPService>();
             services.AddScoped<QrCodeService>();
-            services.AddScoped<UserHistoryService>();
-            services.AddScoped<SharesServices>();
             services.AddScoped<ShareLinkService>();
             services.AddScoped<UserService>();
-            services.AddHttpClient<WeatherAPIHandler>();
+            //services.AddScoped<SearchHistoryServices>();
+            services.AddScoped<SharesServices>();
+            services.AddScoped<SaveDatabaseService>();
+            services.AddScoped<UserHistoryService>();
+            services.AddScoped(_=>new WeatherAPIHandler(new HttpClient()));
 
             services.AddDbContext<DatabaseContext>(x =>
             {
