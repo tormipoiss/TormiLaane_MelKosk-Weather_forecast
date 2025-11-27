@@ -109,7 +109,7 @@ namespace Weather_forecast.Controllers
                     MmOrInches = "inches"
                 };
             }
-            result.Metric = model.Metric;
+            model.Metric = result.Metric;
             result.ForecastDate = model.ForecastDate != null ? model.ForecastDate : model.City.ForecastDate != null ? model.City.ForecastDate : DateTime.Now;
             var cityToHistory = new City();
             cityToHistory.CityName = model.City.CityName;

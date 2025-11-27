@@ -35,6 +35,7 @@ namespace Weather_forecast.Services
                 var values = JsonSerializer.Deserialize<WeatherforcecastAPIResponseModel>(content);
                 CityAndApi fixedvalues = new CityAndApi();
                 fixedvalues.Weather = values;
+                fixedvalues.Metric = metric;
                 string uriLatitude = values.latitude.ToString().Replace(",", ".");
                 string uriLongitude = values.longitude.ToString().Replace(",", ".");
                 fixedvalues.EmbedUrl = $"https://maps.google.com/maps?q={uriLatitude}+{uriLongitude}&t=k&z=15&ie=UTF8&iwloc=&output=embed";

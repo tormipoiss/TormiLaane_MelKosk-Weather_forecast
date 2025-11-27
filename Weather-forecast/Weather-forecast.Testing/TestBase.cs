@@ -29,10 +29,11 @@ namespace Weather_forecast.Testing
         {
             services.AddScoped<LocationByIPService>();
             services.AddScoped<QrCodeService>();
-            services.AddScoped<CitiesServices>();
-            services.AddScoped<SearchHistoryServices>();
+            services.AddScoped<UserHistoryService>();
             services.AddScoped<SharesServices>();
-            services.AddScoped<SaveDatabaseService>();
+            services.AddScoped<ShareLinkService>();
+            services.AddScoped<UserService>();
+            services.AddHttpClient<WeatherAPIHandler>();
 
             services.AddDbContext<DatabaseContext>(x =>
             {
@@ -42,60 +43,6 @@ namespace Weather_forecast.Testing
 
             RegisterMacros(services);
         }
-        //public static Mock<UserManager<TUser>> MockUserManager<TUser>(TUser user) where TUser : class
-        //{
-        //    //string password = null;
-        //    //var store = new Mock<IUserStore<ApplicationUser>>();
-
-        //    //var mock = new Mock<UserManager<ApplicationUser>>(
-        //    //    store.Object, null, null, null, null, null, null, null, null);
-
-        //    //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
-        //    //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
-        //    //mock.Setup(m => m.CreateAsync(user, password)).ReturnsAsync(IdentityResult.Success);
-
-        //    //return mock.Object;
-
-        //    var store = new Mock<IUserStore<TUser>>();
-        //    var userManager = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
-        //    userManager.Object.UserValidators.Add(new UserValidator<TUser>());
-        //    userManager.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
-
-        //    //mgr.Setup(x => x.DeleteAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
-        //    userManager.Setup(x => x.CreateAsync(It.IsAny<TUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
-        //    //mgr.Setup(x => x.UpdateAsync(It.IsAny<TUser>())).ReturnsAsync(IdentityResult.Success);
-
-        //    return userManager;
-        //}
-        //public static UserManager<ApplicationUser> MockUserManager(string id, ApplicationUser user)
-        //{
-        //    var store = new Mock<IUserStore<ApplicationUser>>();
-
-        //    var mock = new Mock<UserManager<ApplicationUser>>(
-        //        store.Object, null, null, null, null, null, null, null, null);
-
-        //    //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
-        //    //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
-        //    //mock.Setup(m => m.CreateAsync(user, "Abc-1")).ReturnsAsync(IdentityResult.Success);
-        //    //mock.Setup(m => m.CreateAsync(A<ApplicationUser>, "Abc-1").ReturnsAsync(IdentityResult.Success);
-
-        //    return mock.Object;
-        //}
-        //public static SignInManager<ApplicationUser> MockSignInManager(UserManager<ApplicationUser> userManager,
-        //    IHttpContextAccessor contextAccessor,
-        //    IUserClaimsPrincipalFactory<ApplicationUser> UserClaimsPrincipalFactory,
-        //    IOptions<IdentityOptions> configMock)
-        //{
-        //    //var store = new Mock<IUserStore<ApplicationUser>>();
-
-        //    var mock = new Mock<SignInManager<ApplicationUser>>(
-        //        userManager, contextAccessor, UserClaimsPrincipalFactory, configMock, null, null, null);
-
-        //    //mock.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
-        //    //mock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
-
-        //    return mock.Object;
-        //}
         public void Dispose() {}
 
         protected T Svc<T>()

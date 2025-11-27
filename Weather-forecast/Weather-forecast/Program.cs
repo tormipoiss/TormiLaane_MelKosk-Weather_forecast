@@ -16,7 +16,6 @@ namespace Weather_forecast
             builder.Services.AddHttpClient<WeatherAPIHandler>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton<LocationByIPService>();
-            builder.Services.AddTransient<CitiesServices>();
             builder.Services.AddTransient<SharesServices>();
             builder.Services.AddTransient<UserHistoryService>();
             builder.Services.AddTransient<ShareLinkService>();

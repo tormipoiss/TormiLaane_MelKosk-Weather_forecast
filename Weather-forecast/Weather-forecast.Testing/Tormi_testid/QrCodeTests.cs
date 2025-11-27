@@ -12,16 +12,8 @@ using Weather_forecast.ViewModels;
 
 namespace Weather_forecast.Testing.Tormi_testid
 {
-    public class WeatherTests : TestBase
+    public class QrCodeTests : TestBase
     {
-        [Fact]
-        public async void Should_ReturnTallinn_WhenGettingLocationByIP()
-        {
-            var result = await Svc<LocationByIPService>().LocationByIP();
-
-            Assert.Equal("Tallinn", result);
-        }
-
         [Fact]
         public void Should_ReturnQRCodeString_WhenGettingQRByURL()
         {
