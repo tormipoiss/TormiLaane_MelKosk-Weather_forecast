@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Principal;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
+using Weather_forecast.Services;
 using Weather_forecast.ViewModels;
 
 namespace Weather_forecast.Controllers
@@ -12,12 +13,14 @@ namespace Weather_forecast.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly DatabaseContext _context;
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, DatabaseContext context)
+        private readonly UserHistoryService _userHistoryService;
+        private readonly SaveDatabaseService _saveDatabaseService;
+        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, DatabaseContext context, UserHistoryService userHistoryService, SaveDatabaseService saveDatabaseService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
+            _userHistoryService = userHistoryService;
+            _saveDatabaseService = saveDatabaseService;
         }
         public IActionResult Register()
         {
@@ -89,7 +92,7 @@ namespace Weather_forecast.Controllers
                 if (result.Succeeded)
                 {
                     var uid = _userManager.GetUserId(User);
-                    History? testHistory = _context.SearchHistory.FirstOrDefault(History => History.UserId == uid);
+                    History? testHistory = _userHistoryService.GetUserHistory(uid);
                     if (testHistory != default)
                     {
                         ViewData["showHistory"] = "true";
@@ -121,7 +124,7 @@ namespace Weather_forecast.Controllers
                 return RedirectToAction("Index", "Home");
             }
             user.GlobalMetric = settings.GlobalMetric;
-            await _context.SaveChangesAsync();
+            await _saveDatabaseService.SaveChangesAsync();
             return View("AccountSettings",settings);
         }
         [HttpGet]

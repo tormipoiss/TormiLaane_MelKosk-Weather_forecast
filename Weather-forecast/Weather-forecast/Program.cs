@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Weather_forecast.Data;
 using Weather_forecast.Models;
 using Weather_forecast.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 namespace Weather_forecast
 {
@@ -16,6 +14,13 @@ namespace Weather_forecast
 
             builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
             builder.Services.AddHttpClient<WeatherAPIHandler>();
+            builder.Services.AddSingleton<QrCodeService>();
+            builder.Services.AddSingleton<LocationByIPService>();
+            builder.Services.AddTransient<SharesServices>();
+            builder.Services.AddTransient<UserHistoryService>();
+            builder.Services.AddTransient<ShareLinkService>();
+            builder.Services.AddTransient<SaveDatabaseService>();
+            builder.Services.AddTransient<UserService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(option =>
