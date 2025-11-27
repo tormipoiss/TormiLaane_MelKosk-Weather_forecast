@@ -100,13 +100,11 @@ namespace Weather_forecast.Testing.Tormi_testid
 
             City city = new City()
             {
-                Id = 1,
                 CityName = "Test"
             };
 
             City city2 = new City()
             {
-                Id = 2,
                 CityName = "Test"
             };
 
@@ -115,13 +113,13 @@ namespace Weather_forecast.Testing.Tormi_testid
 
             History history = new History()
             {
-                UserId = "1",
+                UserId = "4",
                 Cities = Cities
             };
 
             Svc<UserHistoryService>().AddUserHistory(history);
 
-            var result = Svc<UserHistoryService>().GetUserHistory("1");
+            var result = Svc<UserHistoryService>().GetUserHistory("4");
 
             Assert.Equal("Test", result.Cities[0].CityName);
 
@@ -129,7 +127,7 @@ namespace Weather_forecast.Testing.Tormi_testid
 
             Svc<UserHistoryService>().UpdateUserHistory(history);
 
-            var resultUpdated = Svc<UserHistoryService>().GetUserHistory("1");
+            var resultUpdated = Svc<UserHistoryService>().GetUserHistory("4");
 
             Assert.Equal("UusTest", resultUpdated.Cities[0].CityName);
         }
