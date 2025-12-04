@@ -12,7 +12,8 @@ namespace Weather_forecast
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+            //builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+            builder.Services.AddDbContext<DatabaseContext>(options => options.UseInMemoryDatabase("TestDB"));
             builder.Services.AddHttpClient<WeatherAPIHandler>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton<LocationByIPService>();
@@ -50,7 +51,7 @@ namespace Weather_forecast
                 app.UseHsts();
             }
             var _  = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
